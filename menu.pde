@@ -15,27 +15,25 @@ void setupMenu() {
   text("COLS", startX, startY);
 
   // Textfield: COLS
-  cp5.addTextfield("Height")
-   .setPosition(startX, startY + spacingY)
-   .setSize(fieldWidth, fieldHeight)
-   .setFont(font)
-   .setText(str(cols))
-   .setAutoClear(false)
-   .getCaptionLabel().setColor(color(0));  // ← Set to black
+cp5.addTextfield("colsInput")
+  .setPosition(startX, startY + spacingY)
+  .setSize(fieldWidth, fieldHeight)
+  .setFont(font)
+  .setText(str(cols))
+  .setAutoClear(false)
+  // The next line changes the visible label to "Columns"
+  .setCaptionLabel("Columns")  
+  .getCaptionLabel().setColor(color(0));
 
-
-  // Label: ROWS
-  text("ROWS", startX + spacingX, startY);
-
-  // Textfield: ROWS
-cp5.addTextfield("Width")
-   .setPosition(startX + spacingX, startY + spacingY)
-   .setSize(fieldWidth, fieldHeight)
-   .setFont(font)
-   .setText(str(rows))
-   .setAutoClear(false)
-   .getCaptionLabel().setColor(color(0));  // ← Set to black
-
+cp5.addTextfield("rowsInput")
+  .setPosition(startX + spacingX, startY + spacingY)
+  .setSize(fieldWidth, fieldHeight)
+  .setFont(font)
+  .setText(str(rows))
+  .setAutoClear(false)
+  // The next line changes the visible label to "Rows"
+  .setCaptionLabel("Rows")
+  .getCaptionLabel().setColor(color(0));
 
   // Start Button
   cp5.addButton("Start_Editor")
