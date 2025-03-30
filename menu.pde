@@ -39,7 +39,7 @@ cp5.addTextfield("rowsInput")
   cp5.addButton("Start_Editor")
      .setPosition(startX + spacingX * 2, startY + spacingY)
      .setSize(120 * uiScale, 30 * uiScale)
-     .setCaptionLabel("Start Editor");
+     .setCaptionLabel("Resize and new Grid");
 }
 
 
@@ -55,7 +55,7 @@ void controlEvent(ControlEvent e) {
 
 
 void startEditor() {
-  println("Starting editor...");
+  println("Resize and new Grid");
   println("Grid size:", cols, "x", rows);
 
   undoStack.clear();
