@@ -5,6 +5,7 @@ void settings() {
 }
 
 void setup() {
+ 
   surface.setLocation(0, 0);
   surface.setResizable(true);
   surface.setTitle("Pixel Painter");
@@ -14,17 +15,11 @@ void setup() {
   textFont(font);
   cp5.setFont(font);
 
-  setupMenu(); // show the input fields + button
+  // Don't show the menu:
+  // setupMenu(); ← REMOVE this or comment it out
 
-  // Simulate what Start_Editor would do:
-  cols = constrain(cols, 8, 64);
-  rows = constrain(rows, 8, 64);
-  startEditor();  // now canvas + editor loads immediately
-  
-  for (int i = 0; i < 10; i++) {
-  recentColors.add(color(0)); // fully black
-}
-
+  // Instead, start the editor immediately:
+  startEditor();
 
   println("Setup complete.");
 }

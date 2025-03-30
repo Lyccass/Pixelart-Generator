@@ -4,7 +4,7 @@ void setupMenu() {
   int labelSize = 12 * uiScale;
   int spacingX = 150;
   int spacingY = 20;
-  int startX = 40;
+  int startX = 20;
   int startY = 40;
 
   PFont font = createFont("Arial", labelSize);
@@ -15,23 +15,27 @@ void setupMenu() {
   text("COLS", startX, startY);
 
   // Textfield: COLS
-  cp5.addTextfield("colsInput")
-     .setPosition(startX, startY + spacingY)
-     .setSize(fieldWidth, fieldHeight)
-     .setFont(font)
-     .setText(str(cols))
-     .setAutoClear(false);
+  cp5.addTextfield("Height")
+   .setPosition(startX, startY + spacingY)
+   .setSize(fieldWidth, fieldHeight)
+   .setFont(font)
+   .setText(str(cols))
+   .setAutoClear(false)
+   .getCaptionLabel().setColor(color(0));  // ← Set to black
+
 
   // Label: ROWS
   text("ROWS", startX + spacingX, startY);
 
   // Textfield: ROWS
- cp5.addTextfield("rowsInput")  // Match this to what's used later
-     .setPosition(startX + spacingX, startY + spacingY)
-     .setSize(fieldWidth, fieldHeight)
-     .setFont(font)
-     .setText(str(rows))
-     .setAutoClear(false);
+cp5.addTextfield("Width")
+   .setPosition(startX + spacingX, startY + spacingY)
+   .setSize(fieldWidth, fieldHeight)
+   .setFont(font)
+   .setText(str(rows))
+   .setAutoClear(false)
+   .getCaptionLabel().setColor(color(0));  // ← Set to black
+
 
   // Start Button
   cp5.addButton("Start_Editor")

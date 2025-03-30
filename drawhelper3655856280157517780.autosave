@@ -35,35 +35,36 @@ void drawGrid() {
 
 
 void drawRecentColors() {
+ int startX = 40;
+int startY = height / 2 + 260;
   int swatchesPerRow = 5;
-  int startX = 40;
-  int startY = height / 2 + 260;
-  int spacing = 10;
 
   int totalRows = ceil(recentColors.size() / float(swatchesPerRow));
-  int boxWidth = swatchesPerRow * (swatchSize + spacing) - spacing;
-  int boxHeight = totalRows * (swatchSize + spacing) - spacing;
+  int boxWidth = (swatchSize + 10) * swatchesPerRow - 10;
+  int boxHeight = (swatchSize + 10) * totalRows - 10;
 
   // Background box
-  fill(255);
+  fill(255);          
   stroke(180);
-  rect(startX - 20, startY - 80, boxWidth + 40, boxHeight + 100, 10);
+  rect(startX - 20, startY - 80, boxWidth + 40, boxHeight + 100, 8);
 
+  // Label
   fill(0);
   textSize(14 * uiScale);
-  text("Recent Colors:", startX, startY - 50);
+  text("Recent Colors:", startX, startY -60);
 
+  // Swatches
   for (int i = 0; i < recentColors.size(); i++) {
     int col = i % swatchesPerRow;
     int row = i / swatchesPerRow;
-    int x = startX + col * (swatchSize + spacing);
-    int y = startY + row * (swatchSize + spacing);
-
+    int x = startX + col * (swatchSize + 10);
+    int y = startY + row * (swatchSize + 10);
     fill(recentColors.get(i));
     stroke(0);
     rect(x, y, swatchSize, swatchSize);
   }
 }
+
 
 
 
@@ -85,7 +86,7 @@ void drawCurrentColorPreview() {
   rect(previewX, previewY, previewW, previewH);
 
   fill(0);
-  textSize(20);
+  textSize(16);
   textAlign(LEFT, BOTTOM);
-  text("Current Color", previewX, previewY - 10);
+  text("Preview", previewX, previewY - 10);
 }

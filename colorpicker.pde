@@ -2,8 +2,8 @@ void setupColorPicker() {
   int sliderWidth = 180 * uiScale;
   int sliderHeight = 20 * uiScale;
   int labelSize = 20;
-  int startX = 40;
-  int startY = height / 2 - 100;
+  int startX = 20;
+  int startY = height / 2 - 200;
   int spacingY = 50;
 
   PFont font = createFont("Arial", labelSize);

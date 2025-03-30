@@ -1,33 +1,36 @@
 void mousePressed() {
   if (!showEditor) return;
 
-  // ✅ Match swatch Y-pos from drawRecentColors()
-  for (int i = 0; i < recentColors.size(); i++) {
-    int sx = gridOffsetX + i * (swatchSize + 10);
-    int sy = gridOffsetY + gridHeight + 70;  // ← was 40 before!
+ int swatchesPerRow = 5;
+int startX = 40;
+  int startY = height / 2 + 260;
 
-    if (mouseX >= sx && mouseX <= sx + swatchSize &&
-        mouseY >= sy && mouseY <= sy + swatchSize) {
+for (int i = 0; i < recentColors.size(); i++) {
+  int col = i % swatchesPerRow;
+  int row = i / swatchesPerRow;
+  int sx = startX + col * (swatchSize + 10);
+  int sy = startY + row * (swatchSize + 10);
 
-      color c = recentColors.get(i);
-      cp5.get(Slider.class, "Red").setValue(red(c));
-      cp5.get(Slider.class, "Green").setValue(green(c));
-      cp5.get(Slider.class, "Blue").setValue(blue(c));
-      cp5.get(Slider.class, "Alpha").setValue(alpha(c));  // ← add this if you're using alpha!
-      currentColor = c;
+  if (mouseX >= sx && mouseX <= sx + swatchSize &&
+      mouseY >= sy && mouseY <= sy + swatchSize) {
+    color c = recentColors.get(i);
+    cp5.get(Slider.class, "Red").setValue(red(c));
+    cp5.get(Slider.class, "Green").setValue(green(c));
+    cp5.get(Slider.class, "Blue").setValue(blue(c));
+    cp5.get(Slider.class, "Alpha").setValue(alpha(c));
+    currentColor = c;
 
-      println("Selected recent color:", hex(c));
-      return;
-    }
+    println("Selected recent color:", hex(c));
+    return;
   }
+}
 
-  // Painting starts
+
+  // Start painting if not clicking on a swatch
   mouseDown = true;
   hasSavedThisStroke = false;
   paintAt(mouseX, mouseY);
 }
-
-
 
 void mouseReleased() {
   mouseDown = false;
