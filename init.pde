@@ -14,5 +14,12 @@ void setup() {
   textFont(font);
   cp5.setFont(font);
 
-  setupMenu();
+  setupMenu(); // show the input fields + button
+
+  // Simulate what Start_Editor would do:
+  cols = constrain(cols, 8, 64);
+  rows = constrain(rows, 8, 64);
+  startEditor();  // now canvas + editor loads immediately
+
+  println("Setup complete.");
 }

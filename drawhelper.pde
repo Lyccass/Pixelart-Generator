@@ -37,26 +37,38 @@ void drawGrid() {
 void drawRecentColors() {
   fill(0);
   textSize(14 * uiScale);
-  text("Recent Colors:", gridOffsetX, gridOffsetY + gridHeight + 30);
+  text("Recent Colors:", gridOffsetX, gridOffsetY + gridHeight + 35);
+
+  int swatchY = gridOffsetY + gridHeight + 70;
+
   for (int i = 0; i < recentColors.size(); i++) {
-    int x = gridOffsetX + i * (swatchSize + 10);
-    int y = gridOffsetY + gridHeight + 40;
+    int swatchX = gridOffsetX + i * (swatchSize + 10);
     fill(recentColors.get(i));
     stroke(0);
-    rect(x, y, swatchSize, swatchSize);
+    rect(swatchX, swatchY, swatchSize, swatchSize);
   }
 }
+
 
 void drawCurrentColorPreview() {
   float r = cp5.get(Slider.class, "Red").getValue();
   float g = cp5.get(Slider.class, "Green").getValue();
   float b = cp5.get(Slider.class, "Blue").getValue();
-  color preview = color(r, g, b);
+  float a = cp5.get(Slider.class, "Alpha").getValue();
+
+  color preview = color(r, g, b, a);
+
+  int previewX = 40;
+  int previewY = 250; // Adjust based on layout
+  int previewW = 100;
+  int previewH = 40;
+
   fill(preview);
   stroke(0);
-  rect(40, height - 80, 100, 40);
+  rect(previewX, previewY, previewW, previewH);
+
   fill(0);
   textSize(16);
-  text("Current", 40, height - 90);
-  
+  textAlign(LEFT, BOTTOM);
+  text("Preview", previewX, previewY - 10);
 }

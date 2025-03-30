@@ -1,10 +1,10 @@
 void mousePressed() {
   if (!showEditor) return;
 
-  //  Check if a recent color swatch was clicked
+  // ✅ Match swatch Y-pos from drawRecentColors()
   for (int i = 0; i < recentColors.size(); i++) {
     int sx = gridOffsetX + i * (swatchSize + 10);
-    int sy = gridOffsetY + gridHeight + 40;
+    int sy = gridOffsetY + gridHeight + 70;  // ← was 40 before!
 
     if (mouseX >= sx && mouseX <= sx + swatchSize &&
         mouseY >= sy && mouseY <= sy + swatchSize) {
@@ -13,18 +13,20 @@ void mousePressed() {
       cp5.get(Slider.class, "Red").setValue(red(c));
       cp5.get(Slider.class, "Green").setValue(green(c));
       cp5.get(Slider.class, "Blue").setValue(blue(c));
+      cp5.get(Slider.class, "Alpha").setValue(alpha(c));  // ← add this if you're using alpha!
       currentColor = c;
 
       println("Selected recent color:", hex(c));
-      return; // ⛔ Skip painting the canvas
+      return;
     }
   }
 
-  // Normal paint mode starts here
+  // Painting starts
   mouseDown = true;
   hasSavedThisStroke = false;
   paintAt(mouseX, mouseY);
 }
+
 
 
 void mouseReleased() {
@@ -93,7 +95,7 @@ color c = eraserMode ? color(255, 255, 255, 0) : color(
 
     if (!recentColors.contains(c) && !eraserMode) {
       recentColors.add(0, c);
-      if (recentColors.size() > 5) recentColors.remove(5);
+      if (recentColors.size() > 10) recentColors.remove(10);
     }
   }
 }
