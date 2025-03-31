@@ -3,45 +3,57 @@ void saveGrid() {
 }
 
 void saveGridToFile(File selection) {
-  if (selection == null) {
-    println("Save cancelled.");
-    return;
-  }
+  if (selection == null) return;
 
   JSONObject json = new JSONObject();
   JSONArray layersArray = new JSONArray();
+  JSONArray visArray = new JSONArray();
+  JSONArray opacityArray = new JSONArray();
 
-  // Loop through all layers and save their pixel data
   for (int i = 0; i < layers.size(); i++) {
-    JSONArray rowsArray = new JSONArray();
-    layers.get(i).loadPixels(); // Load pixels to access them
+    PGraphics pg = layers.get(i);
+    pg.loadPixels();
 
+    JSONArray layerData = new JSONArray();
     for (int y = 0; y < rows; y++) {
       JSONArray row = new JSONArray();
       for (int x = 0; x < cols; x++) {
-        int index = y * cols + x;
-        color c = layers.get(i).pixels[index];
-        row.append(hex(c));  // Store as hex string
+        int px = x * tileSize;
+        int py = y * tileSize;
+        int idx = py * gridWidth + px;
+
+        color c = pg.pixels[idx];
+        if (alpha(c) == 0) {
+          row.append("TRANSPARENT");
+        } else {
+          row.append(hex(c));
+        }
       }
-      rowsArray.append(row);
+      layerData.append(row);
     }
 
-    layersArray.append(rowsArray); // Append the layer's pixel data
+    layersArray.append(layerData);
+    visArray.append(layerVisibility.get(i));
+    opacityArray.append(layerOpacities.get(i));
   }
 
   json.setJSONArray("layers", layersArray);
+  json.setJSONArray("visibility", visArray);
+  json.setJSONArray("opacity", opacityArray);
   json.setInt("cols", cols);
   json.setInt("rows", rows);
   json.setInt("tileSize", tileSize);
+  json.setInt("activeLayer", activeLayer);
 
   String filePath = selection.getAbsolutePath();
   if (!filePath.toLowerCase().endsWith(".json")) {
     filePath += ".json";
   }
 
-  saveJSONObject(json, filePath); // Save as JSON
-  println("Grid with multiple layers saved to: " + filePath);
+  saveJSONObject(json, filePath);
+  println("✅ Saved to:", filePath);
 }
+
 
 void loadGrid() {
   selectInput("Select a grid file to load:", "loadGridFromFile");
@@ -53,48 +65,52 @@ void loadGridFromFile(File selection) {
     return;
   }
 
-  undoStack.clear();  // Clear undo/redo stack
-  redoStack.clear();
-
   String filePath = selection.getAbsolutePath();
   JSONObject json = loadJSONObject(filePath);
 
   cols = json.getInt("cols");
   rows = json.getInt("rows");
+  tileSize = json.getInt("tileSize", 20); // fallback
   gridWidth = cols * tileSize;
   gridHeight = rows * tileSize;
   gridOffsetX = (width - gridWidth) / 2;
   gridOffsetY = (height - gridHeight) / 2 - 50;
 
   JSONArray layersArray = json.getJSONArray("layers");
+  JSONArray visArray = json.getJSONArray("visibility");
+  JSONArray opacityArray = json.getJSONArray("opacity");
 
-  // Reset layers
   layers.clear();
   layerVisibility.clear();
+  layerOpacities.clear();
 
-  // Load each layer
   for (int i = 0; i < layersArray.size(); i++) {
     PGraphics pg = createGraphics(gridWidth, gridHeight);
     pg.beginDraw();
     pg.clear();
 
-    JSONArray rowsArray = layersArray.getJSONArray(i);
+    JSONArray layerData = layersArray.getJSONArray(i);
     for (int y = 0; y < rows; y++) {
-      JSONArray row = rowsArray.getJSONArray(y);
+      JSONArray row = layerData.getJSONArray(y);
       for (int x = 0; x < cols; x++) {
-        color c = unhex(row.getString(x));
-        pg.noStroke();
-        pg.fill(c);
-        pg.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+        String val = row.getString(x);
+        if (!val.equals("TRANSPARENT")) {
+          color c = unhex(val);
+          pg.noStroke();
+          pg.fill(c);
+          pg.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+        }
       }
     }
 
     pg.endDraw();
     layers.add(pg);
-    layerVisibility.add(true); // Set default visibility for all layers
+    layerVisibility.add(visArray.getBoolean(i));
+    layerOpacities.add(opacityArray.getFloat(i));
   }
 
-  activeLayer = 0;  // Set default active layer to 0
+  activeLayer = json.getInt("activeLayer", 0);
+  println("✅ Loaded grid from: " + filePath);
 
-  println("Multi-layer grid loaded from: " + filePath);
+  setupOpacitySliders();
 }

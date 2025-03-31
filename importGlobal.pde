@@ -18,8 +18,13 @@ color[][] pixelGrid;
 color currentColor = color(0);
 ArrayList<Integer> recentColors = new ArrayList<Integer>();
 
-Stack<PImage[]> undoStack = new Stack<PImage[]>();
-Stack<PImage[]> redoStack = new Stack<PImage[]>();
+
+
+Stack<EditorState> undoStack = new Stack<>();
+Stack<EditorState> redoStack = new Stack<>();
+
+
+
 
 boolean colorPickerInitialized = false;
 PGraphics canvasLayer;
@@ -27,7 +32,6 @@ PGraphics canvasLayer;
 boolean showEditor = false;
 boolean mouseDown = false;
 boolean hasSavedThisStroke = false;
-boolean eraserMode = false;
 boolean showGridLines = true;
 boolean mirrorMode = false;
 boolean exportTransparent = false;

@@ -34,7 +34,7 @@ void mousePressed() {
   }
 
   //  Fill vs Paint logic
-  if (fillMode) {
+  if (currentTool == ToolMode.FILL) {
     fillAt(mouseX, mouseY); // <-- calls your flood fill
     return;
   }
@@ -110,7 +110,7 @@ void paintAt(int mx, int my) {
   PGraphics layer = layers.get(activeLayer);
   layer.beginDraw();
 
-  if (eraserMode) {
+  if (currentTool == ToolMode.ERASER) {
     // Normal erase
     layer.noStroke();
     layer.fill(255, 255, 255, 0);
@@ -158,39 +158,49 @@ void paintAt(int mx, int my) {
 }
 
 
+enum ToolMode { DRAW, FILL, ERASER }
+ToolMode currentTool = ToolMode.DRAW;
 
-
-int currentMode = 0;  // 0: Draw, 1: Fill, 2: Eraser
 
 void keyPressed() {
-  // --- Editing Tools ---
+  // --- Skip shortcuts if typing in layer name
+  if (cp5.get(Textfield.class, "LayerNameInput") != null &&
+      cp5.get(Textfield.class, "LayerNameInput").isFocus()) return;
+
+  // --- Undo/Redo
   if (key == 'z' || key == 'Z') undo();
   if (key == 'x' || key == 'X') redo();
 
-  // Toggle between Draw, Fill, and Eraser on 'D'
-  if (key == 'd' || key == 'D') {
-    currentMode = (currentMode + 1) % 3;  // Cycle through 0, 1, 2
-    updateMode();
-  }
+  // --- Mode Toggles ---
+if (key == 'd' || key == 'D') {
+  if (currentTool == ToolMode.DRAW) currentTool = ToolMode.FILL;
+  else currentTool = ToolMode.DRAW;
+  println("Tool: " + currentTool);
+}
 
-  // --- Grid and Mirror Controls ---
+if (key == 'e' || key == 'E') {
+  currentTool = ToolMode.ERASER;
+  println("Tool: " + currentTool);
+}
+
+
+  // --- Grid / Mirror ---
   if (key == 'g' || key == 'G') {
-    showGridLines = !showGridLines;  // Toggle grid visibility
+    showGridLines = !showGridLines;
     println("Grid Lines: " + (showGridLines ? "ON" : "OFF"));
   }
 
   if (key == 'm' || key == 'M') {
-    mirrorMode = !mirrorMode;  // Toggle mirror mode
+    mirrorMode = !mirrorMode;
     println("Mirror Mode: " + (mirrorMode ? "ON" : "OFF"));
   }
 
   // --- File Actions ---
   if (key == 's' || key == 'S') saveGrid();
-  if (key == 'l' ) loadGrid();
+  if (key == 'l') loadGrid();
   if (key == 'k' || key == 'K') exportLayersAsAnimation();
   if (key == 'p' || key == 'P') exportAsPNG();
   if (key == 'o' || key == 'O') exportSingleLayerPrompt(activeLayer);
-
   if (key == 't' || key == 'T') {
     exportTransparent = !exportTransparent;
     println("Export transparency set to: " + exportTransparent);
@@ -199,8 +209,8 @@ void keyPressed() {
   // --- Layer swapping ---
   if (keyCode == UP) moveLayerUp(activeLayer);
   if (keyCode == DOWN) moveLayerDown(activeLayer);
-  
-  // --- Reference Image Controls ---
+
+  // --- Reference image ---
   if (key == 'i' || key == 'I') loadReferenceImage();
   if (key == 'v' || key == 'V') showReference = !showReference;
   if (key == DELETE || key == BACKSPACE) referenceImage = null;
@@ -223,31 +233,9 @@ void keyPressed() {
     }
   }
 
-  if (key == 'L') { // Shift+L toggles visibility of current layer
+  if (key == 'L') {
     boolean vis = layerVisibility.get(activeLayer);
     layerVisibility.set(activeLayer, !vis);
     println("Layer " + (activeLayer + 1) + " visibility: " + !vis);
-  }
-}
-
-
-// Function to update the mode based on the currentMode
-void updateMode() {
-  switch (currentMode) {
-    case 0: // Draw mode
-      fillMode = false;  // Disable fill mode
-      eraserMode = false; // Disable eraser mode
-      println("Draw Mode Activated");
-      break;
-    case 1: // Fill mode
-      fillMode = true;   // Enable fill mode
-      eraserMode = false; // Disable eraser mode
-      println("Fill Mode Activated");
-      break;
-    case 2: // Eraser mode
-      fillMode = false;  // Disable fill mode
-      eraserMode = true;  // Enable eraser mode
-      println("Eraser Mode Activated");
-      break;
   }
 }

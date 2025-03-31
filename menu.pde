@@ -138,7 +138,7 @@ void drawUIStatus() {
 
   // === Section: Status ===
   text("Status", textX, y); y += lineHeight;
-  text("Tool: " + getCurrentTool(), textX, y); y += lineHeight; // Update tool name here
+  text("Tool: " + getCurrentTool(), textX, y); y += lineHeight;
   text("Mirror: " + (mirrorMode ? "ON (M)" : "OFF (M)"), textX, y); y += lineHeight;
   text("Export Alpha: " + (exportTransparent ? "Transparent (T)" : "Opaque (T)"), textX, y); y += lineHeight * 2;
 
@@ -160,6 +160,17 @@ void drawUIStatus() {
 text("[↑↓] Change layer order", textX, y); y += lineHeight;
 
 }
+
+String getCurrentTool() {
+  switch(currentTool) {
+    case DRAW: return "Draw (D)";
+    case FILL: return "Fill (D)";
+    case ERASER: return "Eraser (E)";
+  }
+  return "Unknown";
+}
+
+
 
 // UI Buttons at bottom right
 void setupExportButtons() {
@@ -190,13 +201,4 @@ if (cp5.getController("Export_Layer") != null) cp5.remove("Export_Layer");
      .setSize(w, h)
      .setCaptionLabel("Export Layer")
      .onClick(e -> exportSingleLayerPrompt(activeLayer));
-}
-
-String getCurrentTool() {
-  switch (currentMode) {
-    case 0: return "Brush (D)";
-    case 1: return "Fill (D)";
-    case 2: return "Eraser (E)";
-    default: return "Brush (D)"; // Default to Brush if something goes wrong
-  }
 }
