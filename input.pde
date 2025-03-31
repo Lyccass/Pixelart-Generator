@@ -135,6 +135,21 @@ void keyPressed() {
   if (key == 's' || key == 'S') saveGrid();
   if (key == 'l' || key == 'L') loadGrid();
   if (key == 'p' || key == 'P') exportAsPNG();
+  if (key == 'i' || key == 'I') loadReferenceImage();
+  if (key == 'i' || key == 'I') loadReferenceImage();
+  if (key == 'v' || key == 'V') showReference = !showReference;
+  if (key == DELETE || key == BACKSPACE) {
+      println("Deleted reference image.");
+      referenceImage = null;
+    }
+    
+  if (key == 'r' || key == 'R') {
+      println("Reset reference image.");
+      refX = 100;
+      refY = 100;
+      refScale = 1.0;
+   }
+   
   if (key == 't' || key == 'T') {
     exportTransparent = !exportTransparent;
     println("Export transparency set to: " + exportTransparent);
