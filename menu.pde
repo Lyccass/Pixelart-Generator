@@ -119,7 +119,7 @@ setupLayerControls();
 // UI Setup Enhancements
 void drawUIStatus() {
   int boxWidth = 320;
-  int boxHeight = 460;
+  int boxHeight = 500;
   int infoX = width - boxWidth - 40;
   int infoY = 40;
   int padding = 15;
@@ -138,7 +138,7 @@ void drawUIStatus() {
 
   // === Section: Status ===
   text("Status", textX, y); y += lineHeight;
-  text("Tool: " + (eraserMode ? "Eraser (E)" : "Brush (E)"), textX, y); y += lineHeight;
+  text("Tool: " + getCurrentTool(), textX, y); y += lineHeight; // Update tool name here
   text("Mirror: " + (mirrorMode ? "ON (M)" : "OFF (M)"), textX, y); y += lineHeight;
   text("Export Alpha: " + (exportTransparent ? "Transparent (T)" : "Opaque (T)"), textX, y); y += lineHeight * 2;
 
@@ -154,7 +154,9 @@ void drawUIStatus() {
   text("[S] Save JSON   [L] Load", textX, y); y += lineHeight;
   text("[P] Export PNG  [T] Toggle Alpha", textX, y); y += lineHeight;
   text("[G] Toggle Grid [M] Mirror Mode", textX, y); y += lineHeight;
-  text("[E] Toggle Eraser", textX, y); y += lineHeight;
+  text("[D] Toggle Ereaser, Brush, Fill", textX, y); y += lineHeight;
+  text("[I] Import reference image", textX, y); y += lineHeight;
+  text("[Y] lock reference image", textX, y); y += lineHeight;
 text("[↑↓] Change layer order", textX, y); y += lineHeight;
 
 }
@@ -188,4 +190,13 @@ if (cp5.getController("Export_Layer") != null) cp5.remove("Export_Layer");
      .setSize(w, h)
      .setCaptionLabel("Export Layer")
      .onClick(e -> exportSingleLayerPrompt(activeLayer));
+}
+
+String getCurrentTool() {
+  switch (currentMode) {
+    case 0: return "Brush (D)";
+    case 1: return "Fill (D)";
+    case 2: return "Eraser (E)";
+    default: return "Brush (D)"; // Default to Brush if something goes wrong
+  }
 }

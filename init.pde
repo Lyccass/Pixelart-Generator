@@ -16,9 +16,6 @@ void setup() {
   cp5.setFont(font);
 
   setupMenu(); // show the input fields + button
-  setupExportButtons();
-setupLayerControls();
-
 
   // Simulate what Start_Editor would do:
   cols = constrain(cols, 8,128);

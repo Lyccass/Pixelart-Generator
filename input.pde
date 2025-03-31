@@ -1,15 +1,14 @@
 void mousePressed() {
-    if (!showEditor || isInteractingWithReference) return;
+  if (!showEditor || isInteractingWithReference) return;
 
   if (mouseButton == CENTER) {
-    // Start panning
     isPanning = true;
     lastPanX = mouseX;
     lastPanY = mouseY;
     return;
   }
 
-  // --- Check if clicked on recent color swatches ---
+  // Check if clicked on recent colors
   int swatchesPerRow = 5;
   int startX = 40;
   int startY = height / 2 + 260;
@@ -34,11 +33,18 @@ void mousePressed() {
     }
   }
 
-  // Start drawing
+  //  Fill vs Paint logic
+  if (fillMode) {
+    fillAt(mouseX, mouseY); // <-- calls your flood fill
+    return;
+  }
+
+  // Otherwise, regular painting
   mouseDown = true;
   hasSavedThisStroke = false;
   paintAt(mouseX, mouseY);
 }
+
 
 void mouseDragged() {
   if (!showEditor) return;
@@ -154,34 +160,46 @@ void paintAt(int mx, int my) {
 
 
 
+int currentMode = 0;  // 0: Draw, 1: Fill, 2: Eraser
+
 void keyPressed() {
   // --- Editing Tools ---
   if (key == 'z' || key == 'Z') undo();
   if (key == 'x' || key == 'X') redo();
-  if (key == 'e' || key == 'E') eraserMode = !eraserMode;
-  if (key == 'g' || key == 'G') showGridLines = !showGridLines;
-  if (key == 'm' || key == 'M') mirrorMode = !mirrorMode;
+
+  // Toggle between Draw, Fill, and Eraser on 'D'
+  if (key == 'd' || key == 'D') {
+    currentMode = (currentMode + 1) % 3;  // Cycle through 0, 1, 2
+    updateMode();
+  }
+
+  // --- Grid and Mirror Controls ---
+  if (key == 'g' || key == 'G') {
+    showGridLines = !showGridLines;  // Toggle grid visibility
+    println("Grid Lines: " + (showGridLines ? "ON" : "OFF"));
+  }
+
+  if (key == 'm' || key == 'M') {
+    mirrorMode = !mirrorMode;  // Toggle mirror mode
+    println("Mirror Mode: " + (mirrorMode ? "ON" : "OFF"));
+  }
 
   // --- File Actions ---
   if (key == 's' || key == 'S') saveGrid();
   if (key == 'l' ) loadGrid();
   if (key == 'k' || key == 'K') exportLayersAsAnimation();
   if (key == 'p' || key == 'P') exportAsPNG();
-  if (key == 'o' || key == 'O') {
-  exportSingleLayerPrompt(activeLayer);
-}
-
+  if (key == 'o' || key == 'O') exportSingleLayerPrompt(activeLayer);
 
   if (key == 't' || key == 'T') {
     exportTransparent = !exportTransparent;
     println("Export transparency set to: " + exportTransparent);
   }
-  
-  //layerswapping
+
+  // --- Layer swapping ---
   if (keyCode == UP) moveLayerUp(activeLayer);
   if (keyCode == DOWN) moveLayerDown(activeLayer);
-
-
+  
   // --- Reference Image Controls ---
   if (key == 'i' || key == 'I') loadReferenceImage();
   if (key == 'v' || key == 'V') showReference = !showReference;
@@ -209,5 +227,27 @@ void keyPressed() {
     boolean vis = layerVisibility.get(activeLayer);
     layerVisibility.set(activeLayer, !vis);
     println("Layer " + (activeLayer + 1) + " visibility: " + !vis);
+  }
+}
+
+
+// Function to update the mode based on the currentMode
+void updateMode() {
+  switch (currentMode) {
+    case 0: // Draw mode
+      fillMode = false;  // Disable fill mode
+      eraserMode = false; // Disable eraser mode
+      println("Draw Mode Activated");
+      break;
+    case 1: // Fill mode
+      fillMode = true;   // Enable fill mode
+      eraserMode = false; // Disable eraser mode
+      println("Fill Mode Activated");
+      break;
+    case 2: // Eraser mode
+      fillMode = false;  // Disable fill mode
+      eraserMode = true;  // Enable eraser mode
+      println("Eraser Mode Activated");
+      break;
   }
 }

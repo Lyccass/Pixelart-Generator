@@ -11,38 +11,37 @@ void saveGridToFile(File selection) {
   JSONObject json = new JSONObject();
   JSONArray layersArray = new JSONArray();
 
-  // Loop through all layers
+  // Loop through all layers and save their pixel data
   for (int i = 0; i < layers.size(); i++) {
     JSONArray rowsArray = new JSONArray();
-    layers.get(i).loadPixels(); // Required before accessing pixels
+    layers.get(i).loadPixels(); // Load pixels to access them
 
     for (int y = 0; y < rows; y++) {
       JSONArray row = new JSONArray();
       for (int x = 0; x < cols; x++) {
         int index = y * cols + x;
         color c = layers.get(i).pixels[index];
-        row.append(hex(c));
+        row.append(hex(c));  // Store as hex string
       }
       rowsArray.append(row);
     }
 
-    layersArray.append(rowsArray);
+    layersArray.append(rowsArray); // Append the layer's pixel data
   }
 
   json.setJSONArray("layers", layersArray);
   json.setInt("cols", cols);
   json.setInt("rows", rows);
-  json.setInt("tileSize", tileSize); // optional, just in case
+  json.setInt("tileSize", tileSize);
 
   String filePath = selection.getAbsolutePath();
   if (!filePath.toLowerCase().endsWith(".json")) {
     filePath += ".json";
   }
 
-  saveJSONObject(json, filePath);
+  saveJSONObject(json, filePath); // Save as JSON
   println("Grid with multiple layers saved to: " + filePath);
 }
-
 
 void loadGrid() {
   selectInput("Select a grid file to load:", "loadGridFromFile");
@@ -54,7 +53,7 @@ void loadGridFromFile(File selection) {
     return;
   }
 
-  undoStack.clear();
+  undoStack.clear();  // Clear undo/redo stack
   redoStack.clear();
 
   String filePath = selection.getAbsolutePath();
@@ -73,13 +72,13 @@ void loadGridFromFile(File selection) {
   layers.clear();
   layerVisibility.clear();
 
+  // Load each layer
   for (int i = 0; i < layersArray.size(); i++) {
     PGraphics pg = createGraphics(gridWidth, gridHeight);
     pg.beginDraw();
     pg.clear();
 
     JSONArray rowsArray = layersArray.getJSONArray(i);
-
     for (int y = 0; y < rows; y++) {
       JSONArray row = rowsArray.getJSONArray(y);
       for (int x = 0; x < cols; x++) {
@@ -92,9 +91,10 @@ void loadGridFromFile(File selection) {
 
     pg.endDraw();
     layers.add(pg);
-    layerVisibility.add(true); // default to visible
+    layerVisibility.add(true); // Set default visibility for all layers
   }
 
-  activeLayer = 0;
+  activeLayer = 0;  // Set default active layer to 0
+
   println("Multi-layer grid loaded from: " + filePath);
 }

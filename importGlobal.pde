@@ -57,3 +57,4 @@ int singleLayerToExport = -1;
 ArrayList<Float> layerOpacities = new ArrayList<Float>();
 
 boolean buttonsAdded = false;
+boolean fillMode = false;
