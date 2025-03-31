@@ -73,10 +73,9 @@ void startEditor() {
   // Reset layers and related lists
   layers.clear();
   layerVisibility.clear();
-  layerOpacities.clear(); // <-- this was missing!
-  
+  layerOpacities.clear();
   removeAllOpacitySliders(); // Clears previous ones
-setupOpacitySliders();     // Adds fresh ones
+  setupOpacitySliders();     // Adds fresh ones
 
 
   for (int i = 0; i < layerCount; i++) {
@@ -99,9 +98,6 @@ setupOpacitySliders();     // Adds fresh ones
 
   // Rebuild layer opacity sliders
   setupOpacitySliders();
-  setupExportButtons();
-setupLayerControls();
-
 
   // If you're no longer using pixelGrid, you can delete this block:
   pixelGrid = new color[cols][rows];
@@ -166,7 +162,9 @@ void setupExportButtons() {
   int w = 280;
   int h = 50;
   int spacing = 60;
-  
+
+
+ // Remove existing buttons if they exist
   if (cp5.getController("Export_PNG") != null) cp5.remove("Export_PNG");
 if (cp5.getController("Export_Animation") != null) cp5.remove("Export_Animation");
 if (cp5.getController("Export_Layer") != null) cp5.remove("Export_Layer");
@@ -188,4 +186,5 @@ if (cp5.getController("Export_Layer") != null) cp5.remove("Export_Layer");
      .setSize(w, h)
      .setCaptionLabel("Export Layer")
      .onClick(e -> exportSingleLayerPrompt(activeLayer));
+     
 }
