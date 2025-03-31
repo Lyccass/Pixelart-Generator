@@ -109,21 +109,20 @@ void startEditor() {
 }
 
 
+// UI Setup Enhancements
 void drawUIStatus() {
   int boxWidth = 320;
-  int boxHeight = 380; // Slightly taller to fit layer info
+  int boxHeight = 420;
   int infoX = width - boxWidth - 40;
   int infoY = 40;
   int padding = 15;
   int lineHeight = 24;
 
-  // Draw background box
-  fill(255, 240); // Slightly transparent white
+  fill(255, 240);
   stroke(180);
   strokeWeight(1);
   rect(infoX - padding, infoY - padding, boxWidth, boxHeight, 12);
 
-  // Set text styling
   fill(0);
   textSize(18);
   textAlign(LEFT, TOP);
@@ -139,7 +138,8 @@ void drawUIStatus() {
   // === Section: Layers ===
   text("Layer Info", textX, y); y += lineHeight;
   text("Active Layer: " + (activeLayer + 1) + " / " + layers.size(), textX, y); y += lineHeight;
-  text("Visible: " + (layerVisibility.get(activeLayer) ? "Yes" : "No") + " (Shift+L)", textX, y); y += lineHeight * 2;
+  text("Visible: " + (layerVisibility.get(activeLayer) ? "Yes" : "No") + " (Shift+L)", textX, y); y += lineHeight;
+  text("Opacity: " + nf(layerOpacities.get(activeLayer), 1, 2), textX, y); y += lineHeight * 2;
 
   // === Section: Shortcuts ===
   text("Shortcuts", textX, y); y += lineHeight;
@@ -147,5 +147,34 @@ void drawUIStatus() {
   text("[S] Save JSON   [L] Load", textX, y); y += lineHeight;
   text("[P] Export PNG  [T] Toggle Alpha", textX, y); y += lineHeight;
   text("[G] Toggle Grid [M] Mirror Mode", textX, y); y += lineHeight;
-  text("[E] Toggle Eraser", textX, y);
+  text("[E] Toggle Eraser", textX, y); y += lineHeight;
+text("Layer ↑↓: Arrow Keys", textX, y); y += lineHeight;
+
+}
+
+// UI Buttons at bottom right
+void setupExportButtons() {
+  int x = width - 350;
+  int y = height - 450;
+  int w = 280;
+  int h = 50;
+  int spacing = 60;
+
+  cp5.addButton("Export_PNG")
+     .setPosition(x, y)
+     .setSize(w, h)
+     .setCaptionLabel("Export PNG")
+     .onClick(e -> exportAsPNG());
+
+  cp5.addButton("Export_Animation")
+     .setPosition(x, y + spacing)
+     .setSize(w, h)
+     .setCaptionLabel("Export Animation")
+     .onClick(e -> exportLayersAsAnimation());
+
+  cp5.addButton("Export_Layer")
+     .setPosition(x, y + spacing*2)
+     .setSize(w, h)
+     .setCaptionLabel("Export Layer")
+     .onClick(e -> exportSingleLayerPrompt(activeLayer));
 }

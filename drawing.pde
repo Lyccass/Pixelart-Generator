@@ -6,8 +6,9 @@ void draw() {
     translate(panOffsetX, panOffsetY);
     scale(zoom);
 
-    drawReferenceImage();  //  First: image goes right above background
-    drawGrid();           //  Then: grid + painted pixels draw on to
+    drawReferenceImage();
+    drawGrid();
+
     popMatrix();
 
     drawRecentColors();
@@ -19,6 +20,12 @@ void draw() {
     if (shouldExportImage && exportPath != null) {
       saveCanvasTo(exportPath);
       shouldExportImage = false;
+    }
+
+    // Only call this once per frame after layout has settled
+    if (!buttonsAdded) {
+      setupExportButtons();
+      buttonsAdded = true;
     }
   }
 }

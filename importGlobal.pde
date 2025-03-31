@@ -55,3 +55,5 @@ int activeLayer = 0;
 int layerCount = 3; // You can increase this later
 int singleLayerToExport = -1;
 ArrayList<Float> layerOpacities = new ArrayList<Float>();
+
+boolean buttonsAdded = false;
