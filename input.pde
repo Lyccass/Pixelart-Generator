@@ -158,11 +158,19 @@ void keyPressed() {
   // --- File Actions ---
   if (key == 's' || key == 'S') saveGrid();
   if (key == 'l' ) loadGrid();
+  if (key == 'k' || key == 'K') exportLayersAsAnimation();
   if (key == 'p' || key == 'P') exportAsPNG();
+  if (key == 'o' || key == 'O') {
+  exportSingleLayerPrompt(activeLayer);
+}
+
+
   if (key == 't' || key == 'T') {
     exportTransparent = !exportTransparent;
     println("Export transparency set to: " + exportTransparent);
   }
+  
+  
 
   // --- Reference Image Controls ---
   if (key == 'i' || key == 'I') loadReferenceImage();

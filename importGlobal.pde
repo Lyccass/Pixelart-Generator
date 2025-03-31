@@ -16,8 +16,8 @@ color[][] pixelGrid;
 color currentColor = color(0);
 ArrayList<Integer> recentColors = new ArrayList<Integer>();
 
-Stack<color[][]> undoStack = new Stack<color[][]>();
-Stack<color[][]> redoStack = new Stack<color[][]>();
+Stack<PImage[]> undoStack = new Stack<PImage[]>();
+Stack<PImage[]> redoStack = new Stack<PImage[]>();
 
 boolean colorPickerInitialized = false;
 PGraphics canvasLayer;
@@ -50,3 +50,4 @@ ArrayList<PGraphics> layers = new ArrayList<PGraphics>();
 ArrayList<Boolean> layerVisibility = new ArrayList<Boolean>();
 int activeLayer = 0;
 int layerCount = 3; // You can increase this later
+int singleLayerToExport = -1;

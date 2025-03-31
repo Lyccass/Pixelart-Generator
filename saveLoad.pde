@@ -9,19 +9,30 @@ void saveGridToFile(File selection) {
   }
 
   JSONObject json = new JSONObject();
-  JSONArray rowsArray = new JSONArray();
+  JSONArray layersArray = new JSONArray();
 
-  for (int y = 0; y < rows; y++) {
-    JSONArray row = new JSONArray();
-    for (int x = 0; x < cols; x++) {
-      row.append(hex(pixelGrid[x][y]));
+  // Loop through all layers
+  for (int i = 0; i < layers.size(); i++) {
+    JSONArray rowsArray = new JSONArray();
+    layers.get(i).loadPixels(); // Required before accessing pixels
+
+    for (int y = 0; y < rows; y++) {
+      JSONArray row = new JSONArray();
+      for (int x = 0; x < cols; x++) {
+        int index = y * cols + x;
+        color c = layers.get(i).pixels[index];
+        row.append(hex(c));
+      }
+      rowsArray.append(row);
     }
-    rowsArray.append(row);
+
+    layersArray.append(rowsArray);
   }
 
-  json.setJSONArray("grid", rowsArray);
+  json.setJSONArray("layers", layersArray);
   json.setInt("cols", cols);
   json.setInt("rows", rows);
+  json.setInt("tileSize", tileSize); // optional, just in case
 
   String filePath = selection.getAbsolutePath();
   if (!filePath.toLowerCase().endsWith(".json")) {
@@ -29,8 +40,9 @@ void saveGridToFile(File selection) {
   }
 
   saveJSONObject(json, filePath);
-  println("Grid saved to: " + filePath);
+  println("Grid with multiple layers saved to: " + filePath);
 }
+
 
 void loadGrid() {
   selectInput("Select a grid file to load:", "loadGridFromFile");
@@ -55,15 +67,34 @@ void loadGridFromFile(File selection) {
   gridOffsetX = (width - gridWidth) / 2;
   gridOffsetY = (height - gridHeight) / 2 - 50;
 
-  JSONArray rowsArray = json.getJSONArray("grid");
-  pixelGrid = new color[cols][rows];
+  JSONArray layersArray = json.getJSONArray("layers");
 
-  for (int y = 0; y < rows; y++) {
-    JSONArray row = rowsArray.getJSONArray(y);
-    for (int x = 0; x < cols; x++) {
-      pixelGrid[x][y] = unhex(row.getString(x));
+  // Reset layers
+  layers.clear();
+  layerVisibility.clear();
+
+  for (int i = 0; i < layersArray.size(); i++) {
+    PGraphics pg = createGraphics(gridWidth, gridHeight);
+    pg.beginDraw();
+    pg.clear();
+
+    JSONArray rowsArray = layersArray.getJSONArray(i);
+
+    for (int y = 0; y < rows; y++) {
+      JSONArray row = rowsArray.getJSONArray(y);
+      for (int x = 0; x < cols; x++) {
+        color c = unhex(row.getString(x));
+        pg.noStroke();
+        pg.fill(c);
+        pg.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+      }
     }
+
+    pg.endDraw();
+    layers.add(pg);
+    layerVisibility.add(true); // default to visible
   }
 
-  println("Grid loaded from: " + filePath);
+  activeLayer = 0;
+  println("Multi-layer grid loaded from: " + filePath);
 }

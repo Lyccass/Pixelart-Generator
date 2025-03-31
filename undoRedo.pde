@@ -1,9 +1,7 @@
 void saveStateForUndo() {
-  color[][] snapshot = new color[cols][rows];
-  for (int x = 0; x < cols; x++) {
-    for (int y = 0; y < rows; y++) {
-      snapshot[x][y] = pixelGrid[x][y];
-    }
+  PImage[] snapshot = new PImage[layers.size()];
+  for (int i = 0; i < layers.size(); i++) {
+    snapshot[i] = layers.get(i).get(); // make a deep copy of the layer
   }
   undoStack.push(snapshot);
   if (undoStack.size() > 30) undoStack.remove(0);
@@ -12,24 +10,36 @@ void saveStateForUndo() {
 
 void undo() {
   if (!undoStack.empty()) {
-    redoStack.push(copyGrid(pixelGrid));
-    pixelGrid = undoStack.pop();
+    PImage[] current = new PImage[layers.size()];
+    for (int i = 0; i < layers.size(); i++) {
+      current[i] = layers.get(i).get();
+    }
+    redoStack.push(current);
+
+    PImage[] snapshot = undoStack.pop();
+    for (int i = 0; i < snapshot.length; i++) {
+      layers.get(i).beginDraw();
+      layers.get(i).clear(); // in case the snapshot is smaller
+      layers.get(i).image(snapshot[i], 0, 0);
+      layers.get(i).endDraw();
+    }
   }
 }
 
 void redo() {
   if (!redoStack.empty()) {
-    undoStack.push(copyGrid(pixelGrid));
-    pixelGrid = redoStack.pop();
-  }
-}
+    PImage[] current = new PImage[layers.size()];
+    for (int i = 0; i < layers.size(); i++) {
+      current[i] = layers.get(i).get();
+    }
+    undoStack.push(current);
 
-color[][] copyGrid(color[][] original) {
-  color[][] copy = new color[cols][rows];
-  for (int x = 0; x < cols; x++) {
-    for (int y = 0; y < rows; y++) {
-      copy[x][y] = original[x][y];
+    PImage[] snapshot = redoStack.pop();
+    for (int i = 0; i < snapshot.length; i++) {
+      layers.get(i).beginDraw();
+      layers.get(i).clear();
+      layers.get(i).image(snapshot[i], 0, 0);
+      layers.get(i).endDraw();
     }
   }
-  return copy;
 }
