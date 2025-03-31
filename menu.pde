@@ -112,7 +112,7 @@ void startEditor() {
 // UI Setup Enhancements
 void drawUIStatus() {
   int boxWidth = 320;
-  int boxHeight = 420;
+  int boxHeight = 460;
   int infoX = width - boxWidth - 40;
   int infoY = 40;
   int padding = 15;
@@ -148,7 +148,7 @@ void drawUIStatus() {
   text("[P] Export PNG  [T] Toggle Alpha", textX, y); y += lineHeight;
   text("[G] Toggle Grid [M] Mirror Mode", textX, y); y += lineHeight;
   text("[E] Toggle Eraser", textX, y); y += lineHeight;
-text("Layer ↑↓: Arrow Keys", textX, y); y += lineHeight;
+text("[↑↓] Change layer order", textX, y); y += lineHeight;
 
 }
 

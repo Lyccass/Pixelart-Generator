@@ -1,4 +1,11 @@
 void drawGrid() {
+  // 0. Optional: solid white background for all layers (like export opaque mode)
+  if (!exportTransparent) {
+    noStroke();
+    fill(255); // white
+    rect(gridOffsetX, gridOffsetY, gridWidth, gridHeight);
+  }
+
   // 1. Draw all visible layers with opacity
   for (int i = 0; i < layers.size(); i++) {
     if (layerVisibility.get(i)) {
@@ -9,7 +16,7 @@ void drawGrid() {
     }
   }
 
-  // 2. Optionally: draw grid lines over all layers
+  // 2. Optional: draw grid lines over everything
   if (showGridLines) {
     stroke(200);
     for (int x = 0; x <= cols; x++) {
@@ -101,4 +108,20 @@ void swapLayers(int i, int j) {
   Collections.swap(layerVisibility, i, j);
   Collections.swap(layerOpacities, i, j);
   // Optionally: swap layer names if you're using those
+}
+
+void drawLayerOverlay() {
+  float infoX = gridOffsetX;
+  float infoY = gridOffsetY - 90; // slightly above grid
+
+  fill(255, 240);
+  stroke(150);
+  rect(infoX, infoY, 180, 60, 10); // Rounded background
+
+  fill(0);
+  textSize(14);
+  textAlign(LEFT, TOP);
+  text("Layer " + (activeLayer + 1) + " / " + layers.size(), infoX + 10, infoY + 8);
+  text("Visible: " + (layerVisibility.get(activeLayer) ? "Yes" : "No"), infoX + 10, infoY + 26);
+  text("Opacity: " + nf(layerOpacities.get(activeLayer), 1, 2), infoX + 10, infoY + 42);
 }

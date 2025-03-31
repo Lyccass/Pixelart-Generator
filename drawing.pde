@@ -8,6 +8,7 @@ void draw() {
 
     drawReferenceImage();
     drawGrid();
+    drawLayerOverlay(); 
 
     popMatrix();
 
