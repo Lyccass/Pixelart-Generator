@@ -54,7 +54,7 @@ void drawReferenceImage() {
     fill(0, 180);
     textSize(14);
     textAlign(LEFT, BOTTOM);
-    text(imageLocked ? " Locked (press L to unlock)" : " Drag & Resize (press L to lock)", 5, -5);
+    text(imageLocked ? " Locked (press Y to unlock)" : " Drag & Resize (press Y to lock)", 5, -5);
 
     popMatrix();
   }

@@ -66,7 +66,23 @@ void startEditor() {
   gridOffsetX = (width - gridWidth) / 2;
   gridOffsetY = (height - gridHeight) / 2 - 50;
 
-  canvasLayer = createGraphics(gridWidth, gridHeight);
+  layers.clear();
+layerVisibility.clear();
+
+for (int i = 0; i < layerCount; i++) {
+  PGraphics pg = createGraphics(gridWidth, gridHeight);
+  pg.beginDraw();
+  pg.clear(); // Transparent
+  pg.endDraw();
+
+  layers.add(pg);
+  layerVisibility.add(true); // All layers visible by default
+}
+
+activeLayer = 0; // Default to first layer
+
+// No need for canvasLayer anymore
+
   pixelGrid = new color[cols][rows];
   for (int x = 0; x < cols; x++) {
     for (int y = 0; y < rows; y++) {
@@ -82,7 +98,7 @@ void startEditor() {
 
 void drawUIStatus() {
   int boxWidth = 320;
-  int boxHeight = 320;
+  int boxHeight = 380; // Slightly taller to fit layer info
   int infoX = width - boxWidth - 40;
   int infoY = 40;
   int padding = 15;
@@ -92,22 +108,27 @@ void drawUIStatus() {
   fill(255, 240); // Slightly transparent white
   stroke(180);
   strokeWeight(1);
-  rect(infoX - padding, infoY - padding, boxWidth, boxHeight, 12); // Rounded corners
+  rect(infoX - padding, infoY - padding, boxWidth, boxHeight, 12);
 
-  // Set up text styling
+  // Set text styling
   fill(0);
   textSize(18);
   textAlign(LEFT, TOP);
   int textX = infoX;
   int y = infoY;
 
-  // Section: Status
+  // === Section: Status ===
   text("Status", textX, y); y += lineHeight;
   text("Tool: " + (eraserMode ? "Eraser (E)" : "Brush (E)"), textX, y); y += lineHeight;
   text("Mirror: " + (mirrorMode ? "ON (M)" : "OFF (M)"), textX, y); y += lineHeight;
   text("Export Alpha: " + (exportTransparent ? "Transparent (T)" : "Opaque (T)"), textX, y); y += lineHeight * 2;
 
-  // Section: Shortcuts
+  // === Section: Layers ===
+  text("Layer Info", textX, y); y += lineHeight;
+  text("Active Layer: " + (activeLayer + 1) + " / " + layers.size(), textX, y); y += lineHeight;
+  text("Visible: " + (layerVisibility.get(activeLayer) ? "Yes" : "No") + " (Shift+L)", textX, y); y += lineHeight * 2;
+
+  // === Section: Shortcuts ===
   text("Shortcuts", textX, y); y += lineHeight;
   text("[Z] Undo        [X] Redo", textX, y); y += lineHeight;
   text("[S] Save JSON   [L] Load", textX, y); y += lineHeight;

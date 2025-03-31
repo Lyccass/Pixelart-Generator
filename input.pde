@@ -87,7 +87,6 @@ void mouseWheel(MouseEvent event) {
 
 
 void paintAt(int mx, int my) {
-  // Convert screen space to world space
   float worldX = (mx - panOffsetX) / zoom;
   float worldY = (my - panOffsetY) / zoom;
 
@@ -98,64 +97,99 @@ void paintAt(int mx, int my) {
     x >= 0 && x < cols &&
     y >= 0 && y < rows;
 
-  if (insideGrid) {
-    if (!hasSavedThisStroke) {
-      saveStateForUndo();
-      hasSavedThisStroke = true;
-    }
+  if (!insideGrid) return;
 
+  if (!hasSavedThisStroke) {
+    saveStateForUndo();
+    hasSavedThisStroke = true;
+  }
+
+  PGraphics layer = layers.get(activeLayer);
+  layer.beginDraw();
+
+  if (eraserMode) {
+    // Transparent erase using REPLACE mode
+    layer.noStroke();
+    layer.fill(255, 255, 255, 0);
+    layer.blendMode(REPLACE);
+    layer.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+    layer.blendMode(BLEND);
+  } else {
     float a = cp5.get(Slider.class, "Alpha").getValue();
-    color c = eraserMode ? color(255, 255, 255, 0) : color(
+    color c = color(
       cp5.get(Slider.class, "Red").getValue(),
       cp5.get(Slider.class, "Green").getValue(),
       cp5.get(Slider.class, "Blue").getValue(),
       a
     );
-
+    layer.noStroke();
+    layer.fill(c);
+    layer.rect(x * tileSize, y * tileSize, tileSize, tileSize);
     currentColor = c;
-    pixelGrid[x][y] = c;
 
-    if (mirrorMode) {
-      int mxMirror = cols - 1 - x;
-      if (mxMirror != x && mxMirror >= 0 && mxMirror < cols) {
-        pixelGrid[mxMirror][y] = c;
-      }
-    }
-
-    if (!recentColors.contains(c) && !eraserMode) {
+    if (!recentColors.contains(c)) {
       recentColors.add(0, c);
       if (recentColors.size() > 10) recentColors.remove(10);
+    }
+  }
+
+  layer.endDraw();
+
+  // Mirror mode support
+  if (mirrorMode) {
+    int mxMirror = cols - 1 - x;
+    if (mxMirror != x && mxMirror >= 0 && mxMirror < cols) {
+      paintAt((int)((mxMirror * tileSize + gridOffsetX) * zoom + panOffsetX), my);
     }
   }
 }
 
 
+
+
 void keyPressed() {
+  // --- Editing Tools ---
   if (key == 'z' || key == 'Z') undo();
   if (key == 'x' || key == 'X') redo();
   if (key == 'e' || key == 'E') eraserMode = !eraserMode;
   if (key == 'g' || key == 'G') showGridLines = !showGridLines;
   if (key == 'm' || key == 'M') mirrorMode = !mirrorMode;
-  if (key == 's' || key == 'S') saveGrid();
-  if (key == 'l' || key == 'L') loadGrid();
-  if (key == 'p' || key == 'P') exportAsPNG();
-  if (key == 'i' || key == 'I') loadReferenceImage();
-  if (key == 'i' || key == 'I') loadReferenceImage();
-if (key == 'v' || key == 'V') showReference = !showReference;
-if (key == DELETE || key == BACKSPACE) referenceImage = null;
-if (key == 'r' || key == 'R') {
-  refX = 100;
-  refY = 100;
-  refScale = 1.0;
-}
-if (key == 'y' || key == 'Y') {
-  imageLocked = !imageLocked;
-  println("Reference image locked: " + imageLocked);
-}
 
-   
+  // --- File Actions ---
+  if (key == 's' || key == 'S') saveGrid();
+  if (key == 'l' ) loadGrid();
+  if (key == 'p' || key == 'P') exportAsPNG();
   if (key == 't' || key == 'T') {
     exportTransparent = !exportTransparent;
     println("Export transparency set to: " + exportTransparent);
+  }
+
+  // --- Reference Image Controls ---
+  if (key == 'i' || key == 'I') loadReferenceImage();
+  if (key == 'v' || key == 'V') showReference = !showReference;
+  if (key == DELETE || key == BACKSPACE) referenceImage = null;
+  if (key == 'r' || key == 'R') {
+    refX = 100;
+    refY = 100;
+    refScale = 1.0;
+  }
+  if (key == 'y' || key == 'Y') {
+    imageLocked = !imageLocked;
+    println("Reference image locked: " + imageLocked);
+  }
+
+  // --- Layer Controls ---
+  if (key >= '1' && key <= '9') {
+    int index = key - '1';
+    if (index < layers.size()) {
+      activeLayer = index;
+      println("Switched to layer: " + (activeLayer + 1));
+    }
+  }
+
+  if (key == 'L') { // Shift+L toggles visibility of current layer
+    boolean vis = layerVisibility.get(activeLayer);
+    layerVisibility.set(activeLayer, !vis);
+    println("Layer " + (activeLayer + 1) + " visibility: " + !vis);
   }
 }

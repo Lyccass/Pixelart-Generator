@@ -21,40 +21,24 @@ void onExportPathSelected(File selection) {
 void saveCanvasTo(String path) {
   println("Saving PNG to: " + path);
 
-  // SAFER: Use default renderer (JAVA2D) unless you *really* need P2D
-  PGraphics pg = createGraphics(gridWidth, gridHeight);  // Default is JAVA2D
+  PGraphics pg = createGraphics(gridWidth, gridHeight);  // Use default renderer
 
   pg.beginDraw();
 
   if (exportTransparent) {
-    pg.clear();  // Full transparency
+    pg.clear();  // Transparent background
   } else {
     pg.background(255);  // Opaque white
   }
 
-  for (int x = 0; x < cols; x++) {
-    for (int y = 0; y < rows; y++) {
-      color c = pixelGrid[x][y];
-
-      // ⛔ If transparency is OFF, force full opacity
-      if (!exportTransparent) {
-        c = color(red(c), green(c), blue(c), 255);
-      }
-
-      // ✅ Only draw visible pixels (non-zero alpha)
-      if (alpha(c) > 0) {
-        pg.noStroke();
-        pg.fill(c);
-        pg.rect(x * tileSize, y * tileSize, tileSize, tileSize);
-      }
+  // ✅ Draw all visible layers onto export image
+  for (int i = 0; i < layers.size(); i++) {
+    if (layerVisibility.get(i)) {
+      pg.image(layers.get(i), 0, 0);
     }
   }
 
   pg.endDraw();
-
-  // Optional sanity check:
-  // pg.fill(255, 0, 0, 255);
-  // pg.rect(0, 0, 100, 100);  // Uncomment if nothing appears!
 
   pg.save(path);
   println("Export complete!");

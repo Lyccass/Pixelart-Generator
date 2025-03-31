@@ -1,36 +1,21 @@
 void drawGrid() {
-  canvasLayer.beginDraw();
-  if (exportTransparent) {
-  canvasLayer.clear();
-} else {
-  canvasLayer.background(255);
-}
-
-
-  for (int x = 0; x < cols; x++) {
-    for (int y = 0; y < rows; y++) {
-      color c = pixelGrid[x][y];
-      if (alpha(c) == 0) continue; // skip fully transparent
-
-      canvasLayer.noStroke();
-      canvasLayer.fill(c);
-      canvasLayer.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+  // 1. Draw all visible layers
+  for (int i = 0; i < layers.size(); i++) {
+    if (layerVisibility.get(i)) {
+      image(layers.get(i), gridOffsetX, gridOffsetY);
     }
   }
 
-  canvasLayer.endDraw();
-
-  // Draw the canvas to screen
-  image(canvasLayer, gridOffsetX, gridOffsetY);
-
-  // Grid lines on top (optional)
+  // 2. Optionally: draw grid lines over all layers
   if (showGridLines) {
     stroke(200);
     for (int x = 0; x <= cols; x++) {
-      line(gridOffsetX + x * tileSize, gridOffsetY, gridOffsetX + x * tileSize, gridOffsetY + gridHeight);
+      line(gridOffsetX + x * tileSize, gridOffsetY,
+           gridOffsetX + x * tileSize, gridOffsetY + gridHeight);
     }
     for (int y = 0; y <= rows; y++) {
-      line(gridOffsetX, gridOffsetY + y * tileSize, gridOffsetX + gridWidth, gridOffsetY + y * tileSize);
+      line(gridOffsetX, gridOffsetY + y * tileSize,
+           gridOffsetX + gridWidth, gridOffsetY + y * tileSize);
     }
   }
 }

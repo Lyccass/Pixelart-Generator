@@ -44,3 +44,9 @@ float lastPanX = 0;
 float lastPanY = 0;
 
 boolean isPanning = false;
+
+
+ArrayList<PGraphics> layers = new ArrayList<PGraphics>();
+ArrayList<Boolean> layerVisibility = new ArrayList<Boolean>();
+int activeLayer = 0;
+int layerCount = 3; // You can increase this later
