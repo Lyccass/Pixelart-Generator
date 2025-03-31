@@ -1,19 +1,19 @@
 void setupLayerControls() {
-  int x = width - 180;
-  int y = height - 200; // above export buttons
-  int w = 140;
-  int h = 25;
-  int spacing = 30;
+  int x = width - 350;
+  int y = height - 240; // above export buttons
+  int w = 280;
+  int h = 50;
+  int spacing = 60;
 
   cp5.addButton("Add_Layer")
    .setPosition(x, y)
    .setSize(w, h)
    .setCaptionLabel("+ Add Layer")
    .onClick(e -> {
-     if (layers.size() < 10) {
+     if (layers.size() < 9) {
        addNewLayer();
      } else {
-       println("Layer limit reached (10).");
+       println("Layer limit reached (9).");
      }
    });
 

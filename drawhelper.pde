@@ -116,12 +116,13 @@ void drawLayerOverlay() {
 
   fill(255, 240);
   stroke(150);
-  rect(infoX, infoY, 180, 60, 10); // Rounded background
+  rect(infoX, infoY, 180, 70, 10); // Rounded background
 
-  fill(0);
-  textSize(14);
-  textAlign(LEFT, TOP);
-  text("Layer " + (activeLayer + 1) + " / " + layers.size(), infoX + 10, infoY + 8);
-  text("Visible: " + (layerVisibility.get(activeLayer) ? "Yes" : "No"), infoX + 10, infoY + 26);
-  text("Opacity: " + nf(layerOpacities.get(activeLayer), 1, 2), infoX + 10, infoY + 42);
+fill(255, 0, 0);
+text("Layer " + (activeLayer + 1) + " / " + layers.size(), infoX + 10, infoY + 8);
+
+fill(0);  // back to black
+text("Visible: " + (layerVisibility.get(activeLayer) ? "Yes" : "No"), infoX + 10, infoY + 26);
+text("Opacity: " + nf(layerOpacities.get(activeLayer), 1, 2), infoX + 10, infoY + 42);
+
 }
