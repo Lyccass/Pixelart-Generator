@@ -170,7 +170,10 @@ void keyPressed() {
     println("Export transparency set to: " + exportTransparent);
   }
   
-  
+  //layerswapping
+  if (keyCode == UP) moveLayerUp(activeLayer);
+  if (keyCode == DOWN) moveLayerDown(activeLayer);
+
 
   // --- Reference Image Controls ---
   if (key == 'i' || key == 'I') loadReferenceImage();

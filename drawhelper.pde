@@ -1,8 +1,11 @@
 void drawGrid() {
-  // 1. Draw all visible layers
+  // 1. Draw all visible layers with opacity
   for (int i = 0; i < layers.size(); i++) {
     if (layerVisibility.get(i)) {
+      float alpha = layerOpacities.get(i); // Range: 0.0 to 1.0
+      tint(255, 255 * alpha);
       image(layers.get(i), gridOffsetX, gridOffsetY);
+      noTint(); // Reset tint after each layer
     }
   }
 
@@ -76,4 +79,26 @@ void drawCurrentColorPreview() {
   textSize(20);
   textAlign(LEFT, BOTTOM);
   text("Current Color", previewX, previewY - 10);
+}
+
+
+void moveLayerUp(int index) {
+  if (index >= 0 && index < layers.size() - 1) {
+    swapLayers(index, index + 1);
+    activeLayer = index + 1;
+  }
+}
+
+void moveLayerDown(int index) {
+  if (index > 0 && index < layers.size()) {
+    swapLayers(index, index - 1);
+    activeLayer = index - 1;
+  }
+}
+
+void swapLayers(int i, int j) {
+  Collections.swap(layers, i, j);
+  Collections.swap(layerVisibility, i, j);
+  Collections.swap(layerOpacities, i, j);
+  // Optionally: swap layer names if you're using those
 }

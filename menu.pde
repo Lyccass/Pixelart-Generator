@@ -40,6 +40,10 @@ cp5.addTextfield("rowsInput")
      .setPosition(startX + spacingX * 2, startY + spacingY)
      .setSize(120 * uiScale, 30 * uiScale)
      .setCaptionLabel("Resize and new Grid");
+     
+     
+     
+     
 }
 
 
@@ -66,23 +70,33 @@ void startEditor() {
   gridOffsetX = (width - gridWidth) / 2;
   gridOffsetY = (height - gridHeight) / 2 - 50;
 
+  // Reset layers and related lists
   layers.clear();
-layerVisibility.clear();
+  layerVisibility.clear();
+  layerOpacities.clear(); // <-- this was missing!
 
-for (int i = 0; i < layerCount; i++) {
-  PGraphics pg = createGraphics(gridWidth, gridHeight);
-  pg.beginDraw();
-  pg.clear(); // Transparent
-  pg.endDraw();
+  for (int i = 0; i < layerCount; i++) {
+    PGraphics pg = createGraphics(gridWidth, gridHeight);
+    pg.beginDraw();
+    pg.clear(); // Transparent background
+    pg.endDraw();
 
-  layers.add(pg);
-  layerVisibility.add(true); // All layers visible by default
-}
+    layers.add(pg);
+    layerVisibility.add(true);   // All layers visible
+    layerOpacities.add(1.0);     // All layers fully opaque
+  }
 
-activeLayer = 0; // Default to first layer
+  activeLayer = 0;
 
-// No need for canvasLayer anymore
+  // Remove old sliders
+  for (int i = 0; i < 10; i++) {
+    cp5.remove("Opacity_Layer_" + i);
+  }
 
+  // Rebuild layer opacity sliders
+  setupOpacitySliders();
+
+  // If you're no longer using pixelGrid, you can delete this block:
   pixelGrid = new color[cols][rows];
   for (int x = 0; x < cols; x++) {
     for (int y = 0; y < rows; y++) {
@@ -93,7 +107,6 @@ activeLayer = 0; // Default to first layer
   setupColorPicker();
   showEditor = true;
 }
-
 
 
 void drawUIStatus() {

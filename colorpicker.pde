@@ -61,6 +61,9 @@ void setupColorPicker() {
   alphaSlider.getCaptionLabel().setText("ALPHA").setFont(font).setColor(color(0)).align(ControlP5.LEFT, ControlP5.CENTER);
   alphaSlider.getCaptionLabel().getStyle().marginLeft = -80;
   cp5.getController("Alpha").onChange(e -> updateHexField());
+  
+ 
+
 
   // === HEX ===
   Textfield hexField = cp5.addTextfield("HexInput")
@@ -95,6 +98,32 @@ void setupColorPicker() {
   updateHexField();
 }
 
+void setupOpacitySliders() {
+  int startX = 500; // ⬅️ Move to the right side
+  int startY = 100;
+  int spacingY = 40;
+
+  PFont font = createFont("Arial", 14);
+
+  for (int i = 0; i < layers.size(); i++) {
+    int y = startY + i * spacingY;
+
+    Slider s = cp5.addSlider("Opacity_Layer_" + i)
+      .setPosition(startX, y)
+      .setSize(120, 20)
+      .setRange(0, 1)
+      .setValue(layerOpacities.get(i))
+      .setLabel("Layer " + (i + 1) + " Opacity");
+
+    s.getCaptionLabel().setFont(font).setColor(color(0)).align(ControlP5.LEFT, ControlP5.CENTER);
+    s.getCaptionLabel().getStyle().marginLeft = -120; // align text to left of slider
+
+    cp5.getController("Opacity_Layer_" + i).onChange(e -> {
+      int index = int(split(e.getController().getName(), "_")[2]);
+      layerOpacities.set(index, e.getController().getValue());
+    });
+  }
+}
 
 
 void updateHexField() {

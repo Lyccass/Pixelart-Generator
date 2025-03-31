@@ -2,6 +2,8 @@ import controlP5.*;
 import processing.data.JSONArray;
 import processing.data.JSONObject;
 import java.util.Stack;
+import java.util.Collections;
+
 
 ControlP5 cp5;
 
@@ -48,6 +50,8 @@ boolean isPanning = false;
 
 ArrayList<PGraphics> layers = new ArrayList<PGraphics>();
 ArrayList<Boolean> layerVisibility = new ArrayList<Boolean>();
+
 int activeLayer = 0;
 int layerCount = 3; // You can increase this later
 int singleLayerToExport = -1;
+ArrayList<Float> layerOpacities = new ArrayList<Float>();
