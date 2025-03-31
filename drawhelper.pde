@@ -1,8 +1,11 @@
-
-
 void drawGrid() {
   canvasLayer.beginDraw();
-  canvasLayer.clear(); // clears with transparent bg
+  if (exportTransparent) {
+  canvasLayer.clear();
+} else {
+  canvasLayer.background(255);
+}
+
 
   for (int x = 0; x < cols; x++) {
     for (int y = 0; y < rows; y++) {

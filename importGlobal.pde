@@ -32,3 +32,15 @@ boolean exportTransparent = false;
 
 int uiScale = 2;
 int swatchSize = 30 * uiScale;
+
+float zoom = 1.0;
+float minZoom = 0.2;
+float maxZoom = 5.0;
+
+float panOffsetX = 0;
+float panOffsetY = 0;
+
+float lastPanX = 0;
+float lastPanY = 0;
+
+boolean isPanning = false;
