@@ -6,15 +6,19 @@ void draw() {
     translate(panOffsetX, panOffsetY);
     scale(zoom);
 
-    drawReferenceImage();   // ← inside canvas
-    drawGrid();             // ← over image
-
+    drawReferenceImage();  //  First: image goes right above background
+    drawGrid();           //  Then: grid + painted pixels draw on to
     popMatrix();
 
     drawRecentColors();
     drawCurrentColorPreview();
     drawUIStatus();
 
-    handleReferenceDragging(); // ← after popMatrix (screen space)
+    handleReferenceDragging();
+
+    if (shouldExportImage && exportPath != null) {
+      saveCanvasTo(exportPath);
+      shouldExportImage = false;
+    }
   }
 }

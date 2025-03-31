@@ -5,6 +5,7 @@ void settings() {
 }
 
 void setup() {
+  frameRate(30);  // or even 20 if needed
   surface.setLocation(0, 0);
   surface.setResizable(true);
   surface.setTitle("Pixel Painter");
@@ -17,8 +18,8 @@ void setup() {
   setupMenu(); // show the input fields + button
 
   // Simulate what Start_Editor would do:
-  cols = constrain(cols, 8, 64);
-  rows = constrain(rows, 8, 64);
+  cols = constrain(cols, 8,128);
+  rows = constrain(rows, 8, 128);
   startEditor();  // now canvas + editor loads immediately
   
   for (int i = 0; i < 10; i++) {

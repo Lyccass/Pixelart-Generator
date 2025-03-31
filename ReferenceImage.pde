@@ -9,6 +9,10 @@ float refScale = 1.0;
 boolean overImage = false;
 boolean overResizeCorner = false;
 boolean resizingRef = false;
+boolean isInteractingWithReference = false;
+boolean imageLocked = false;
+
+
 
 float resizeCornerSize = 16; // size of draggable corner box
 
@@ -33,24 +37,37 @@ void drawReferenceImage() {
     scale(refScale);
 
     image(referenceImage, 0, 0);
-    
-    // Draw outline and resize handle
+
+    // Outline
     stroke(0);
     noFill();
     rect(0, 0, referenceImage.width, referenceImage.height);
-    
-    // Resize corner handle
-    fill(255);
-    rect(referenceImage.width - resizeCornerSize, referenceImage.height - resizeCornerSize,
-         resizeCornerSize, resizeCornerSize);
-    
+
+    // Only show resize handle if image is not locked
+    if (!imageLocked) {
+      fill(255);
+      rect(referenceImage.width - resizeCornerSize, referenceImage.height - resizeCornerSize,
+           resizeCornerSize, resizeCornerSize);
+    }
+
+    // Draw lock status label
+    fill(0, 180);
+    textSize(14);
+    textAlign(LEFT, BOTTOM);
+    text(imageLocked ? " Locked (press L to unlock)" : " Drag & Resize (press L to lock)", 5, -5);
+
     popMatrix();
   }
 }
 
 
+
 void handleReferenceDragging() {
   if (!showEditor || referenceImage == null) return;
+  if (!showEditor || referenceImage == null || imageLocked) {
+      isInteractingWithReference = false;
+      return;
+      }
 
   float mouseWorldX = (mouseX - panOffsetX) / zoom;
   float mouseWorldY = (mouseY - panOffsetY) / zoom;
@@ -66,33 +83,37 @@ void handleReferenceDragging() {
                          localY >= referenceImage.height - resizeCornerSize;
 
   // === Only set dragging or resizing on first mouse press ===
-  if (!draggingRef && !resizingRef && mousePressed && mouseButton == LEFT) {
-    if (isOverCorner) {
-      resizingRef = true;
-    } else if (isOverImage) {
-      draggingRef = true;
-      refOffsetX = localX;
-      refOffsetY = localY;
-    }
-  }
+ isInteractingWithReference = false;
 
-  // === While actively resizing ===
-  if (resizingRef) {
-    float scaleX = localX / referenceImage.width;
-    float scaleY = localY / referenceImage.height;
-    float newScale = min(scaleX, scaleY);
-    refScale = lerp(refScale, constrain(newScale, 0.1, 10.0), 0.3);
+if (!draggingRef && !resizingRef && mousePressed && mouseButton == LEFT) {
+  if (isOverCorner) {
+    resizingRef = true;
+  } else if (isOverImage) {
+    draggingRef = true;
+    refOffsetX = localX;
+    refOffsetY = localY;
   }
+}
 
-  // === While actively dragging ===
-  if (draggingRef) {
-    refX = mouseWorldX - refOffsetX * refScale;
-    refY = mouseWorldY - refOffsetY * refScale;
-  }
+// While actively resizing
+if (resizingRef) {
+  float scaleX = localX / referenceImage.width;
+  float scaleY = localY / referenceImage.height;
+  float newScale = min(scaleX, scaleY);
+  refScale = lerp(refScale, constrain(newScale, 0.1, 10.0), 0.3);
+  isInteractingWithReference = true;
+}
 
-  // === Reset flags on mouse release ===
-  if (!mousePressed) {
-    draggingRef = false;
-    resizingRef = false;
-  }
+// While actively dragging
+if (draggingRef) {
+  refX = mouseWorldX - refOffsetX * refScale;
+  refY = mouseWorldY - refOffsetY * refScale;
+  isInteractingWithReference = true;
+}
+
+// On mouse release
+if (!mousePressed) {
+  draggingRef = false;
+  resizingRef = false;
+}
 }

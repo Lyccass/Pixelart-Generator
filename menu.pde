@@ -45,8 +45,8 @@ cp5.addTextfield("rowsInput")
 
 void controlEvent(ControlEvent e) {
   if (e.isFrom(cp5.getController("Start_Editor"))) {
-    int newCols = constrain(int(cp5.get(Textfield.class, "colsInput").getText()), 8, 64);
-    int newRows = constrain(int(cp5.get(Textfield.class, "rowsInput").getText()), 8, 64);
+    int newCols = constrain(int(cp5.get(Textfield.class, "colsInput").getText()), 8, 128);
+    int newRows = constrain(int(cp5.get(Textfield.class, "rowsInput").getText()), 8, 128);
     cols = newCols;
     rows = newRows;
     startEditor();

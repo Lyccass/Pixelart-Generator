@@ -1,5 +1,5 @@
 void mousePressed() {
-  if (!showEditor) return;
+    if (!showEditor || isInteractingWithReference) return;
 
   if (mouseButton == CENTER) {
     // Start panning
@@ -53,10 +53,14 @@ void mouseDragged() {
     return;
   }
 
+  // ⛔ Skip painting if we're interacting with the reference image
+  if (isInteractingWithReference) return;
+
   if (mouseDown) {
     paintAt(mouseX, mouseY);
   }
 }
+
 
 void mouseReleased() {
   isPanning = false;
@@ -137,18 +141,18 @@ void keyPressed() {
   if (key == 'p' || key == 'P') exportAsPNG();
   if (key == 'i' || key == 'I') loadReferenceImage();
   if (key == 'i' || key == 'I') loadReferenceImage();
-  if (key == 'v' || key == 'V') showReference = !showReference;
-  if (key == DELETE || key == BACKSPACE) {
-      println("Deleted reference image.");
-      referenceImage = null;
-    }
-    
-  if (key == 'r' || key == 'R') {
-      println("Reset reference image.");
-      refX = 100;
-      refY = 100;
-      refScale = 1.0;
-   }
+if (key == 'v' || key == 'V') showReference = !showReference;
+if (key == DELETE || key == BACKSPACE) referenceImage = null;
+if (key == 'r' || key == 'R') {
+  refX = 100;
+  refY = 100;
+  refScale = 1.0;
+}
+if (key == 'y' || key == 'Y') {
+  imageLocked = !imageLocked;
+  println("Reference image locked: " + imageLocked);
+}
+
    
   if (key == 't' || key == 'T') {
     exportTransparent = !exportTransparent;
