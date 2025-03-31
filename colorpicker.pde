@@ -99,9 +99,9 @@ void setupColorPicker() {
 }
 
 void setupOpacitySliders() {
-  int startX = 500; // ⬅️ Move to the right side
-  int startY = 100;
-  int spacingY = 40;
+  int startX = 2350; // ️ Move to the right side
+  int startY = 600;
+  int spacingY = 50;
 
   PFont font = createFont("Arial", 14);
 
@@ -116,7 +116,7 @@ void setupOpacitySliders() {
       .setLabel("Layer " + (i + 1) + " Opacity");
 
     s.getCaptionLabel().setFont(font).setColor(color(0)).align(ControlP5.LEFT, ControlP5.CENTER);
-    s.getCaptionLabel().getStyle().marginLeft = -120; // align text to left of slider
+    s.getCaptionLabel().getStyle().marginLeft = -140; // align text to left of slider
 
     cp5.getController("Opacity_Layer_" + i).onChange(e -> {
       int index = int(split(e.getController().getName(), "_")[2]);

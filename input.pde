@@ -93,10 +93,7 @@ void paintAt(int mx, int my) {
   int x = int((worldX - gridOffsetX) / tileSize);
   int y = int((worldY - gridOffsetY) / tileSize);
 
-  boolean insideGrid =
-    x >= 0 && x < cols &&
-    y >= 0 && y < rows;
-
+  boolean insideGrid = x >= 0 && x < cols && y >= 0 && y < rows;
   if (!insideGrid) return;
 
   if (!hasSavedThisStroke) {
@@ -108,11 +105,20 @@ void paintAt(int mx, int my) {
   layer.beginDraw();
 
   if (eraserMode) {
-    // Transparent erase using REPLACE mode
+    // Normal erase
     layer.noStroke();
     layer.fill(255, 255, 255, 0);
     layer.blendMode(REPLACE);
     layer.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+
+    // Mirror
+    if (mirrorMode) {
+      int mxMirror = cols - 1 - x;
+      if (mxMirror != x && mxMirror >= 0 && mxMirror < cols) {
+        layer.rect(mxMirror * tileSize, y * tileSize, tileSize, tileSize);
+      }
+    }
+
     layer.blendMode(BLEND);
   } else {
     float a = cp5.get(Slider.class, "Alpha").getValue();
@@ -122,11 +128,20 @@ void paintAt(int mx, int my) {
       cp5.get(Slider.class, "Blue").getValue(),
       a
     );
+
     layer.noStroke();
     layer.fill(c);
     layer.rect(x * tileSize, y * tileSize, tileSize, tileSize);
-    currentColor = c;
 
+    // Mirror
+    if (mirrorMode) {
+      int mxMirror = cols - 1 - x;
+      if (mxMirror != x && mxMirror >= 0 && mxMirror < cols) {
+        layer.rect(mxMirror * tileSize, y * tileSize, tileSize, tileSize);
+      }
+    }
+
+    currentColor = c;
     if (!recentColors.contains(c)) {
       recentColors.add(0, c);
       if (recentColors.size() > 10) recentColors.remove(10);
@@ -134,14 +149,6 @@ void paintAt(int mx, int my) {
   }
 
   layer.endDraw();
-
-  // Mirror mode support
-  if (mirrorMode) {
-    int mxMirror = cols - 1 - x;
-    if (mxMirror != x && mxMirror >= 0 && mxMirror < cols) {
-      paintAt((int)((mxMirror * tileSize + gridOffsetX) * zoom + panOffsetX), my);
-    }
-  }
 }
 
 
