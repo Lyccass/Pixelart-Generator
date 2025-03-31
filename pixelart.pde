@@ -11,8 +11,9 @@ maybe swap between fill and draw
 toggle eraser seperatly
 increase draw and eraser radius with mousewheel?
 
-
 better ui
 undo and redo are not working as expected
 
+
+MAYBE ACTUAL animations? 
 */  
