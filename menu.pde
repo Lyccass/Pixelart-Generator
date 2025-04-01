@@ -175,20 +175,25 @@ String getCurrentTool() {
 
 
 
-// UI Buttons at bottom right
 void setupExportButtons() {
   int x = width - 350;
   int y = height - 450;
   int w = 280;
   int h = 50;
   int spacing = 60;
-  
-  if (cp5.getController("Export_PNG") != null) cp5.remove("Export_PNG");
-if (cp5.getController("Export_Animation") != null) cp5.remove("Export_Animation");
-if (cp5.getController("Export_Layer") != null) cp5.remove("Export_Layer");
 
+  // --- Clean up old UI ---
+  String[] toRemove = {
+    "Export_PNG", "Export_Animation", "Export_Layer",
+    "ExportScale_Label", "ExportScaleGroup"
+  };
+  for (String id : toRemove) {
+    if (cp5.getController(id) != null) cp5.remove(id);
+  }
+
+  // --- Export Buttons ---
   cp5.addButton("Export_PNG")
-     .setPosition(x, y)
+     .setPosition(x, y-20)
      .setSize(w, h)
      .setCaptionLabel("Export PNG")
      .onClick(e -> exportAsPNG());
@@ -200,8 +205,33 @@ if (cp5.getController("Export_Layer") != null) cp5.remove("Export_Layer");
      .onClick(e -> exportLayersAsAnimation());
 
   cp5.addButton("Export_Layer")
-     .setPosition(x, y + spacing*2)
+     .setPosition(x, y + spacing * 2)
      .setSize(w, h)
      .setCaptionLabel("Export Layer")
      .onClick(e -> exportSingleLayerPrompt(activeLayer));
+
+  // --- Export Scale Label ---
+  int toggleY = y + spacing * 3 + 10;
+  cp5.addTextlabel("ExportScale_Label")
+     .setText("Export Scale:")
+     .setPosition(x, toggleY - 30)
+     .setColorValue(color(0));
+
+  // --- Radio Buttons for Export Scale ---
+  RadioButton rb = cp5.addRadioButton("ExportScaleGroup")
+    .setPosition(x, toggleY - 240)
+    .setSize(20, 20)
+    .setItemsPerRow(4)
+    .setSpacingColumn(50)
+    .addItem("x1", 1)
+    .addItem("x2", 2)
+    .addItem("x3", 3)
+    .addItem("x4", 4)
+    .setNoneSelectedAllowed(false)
+    .activate(0);  // Default to x1
+
+  // Optional: Label style
+  for (int i = 0; i < 4; i++) {
+    rb.getItem(i).getCaptionLabel().setColor(color(0));
+  }
 }

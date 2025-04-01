@@ -9,7 +9,7 @@ ControlP5 cp5;
 
 int cols = 32;
 int rows = 32;
-int tileSize = 20;
+int tileSize = 10;
 
 int gridWidth, gridHeight;
 int gridOffsetX, gridOffsetY;

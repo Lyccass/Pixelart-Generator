@@ -19,11 +19,18 @@ void exportLayersAsAnimation() {
 
 void onExportPathSelected(File selection) {
   if (selection != null) {
-    exportPath = selection.getAbsolutePath();
-    if (!exportPath.toLowerCase().endsWith(".png")) {
-      exportPath += ".png";
+    String base = selection.getAbsolutePath();
+    if (!base.toLowerCase().endsWith(".png")) {
+      base += ".png";
     }
-    shouldExportImage = true;
+
+    // ✅ Get selected scale from the radio group
+    int selectedScale = int(cp5.get(RadioButton.class, "ExportScaleGroup").getValue());
+
+    // ✅ Append scale suffix and export
+    String path = base.replace(".png", "_x" + selectedScale + ".png");
+    saveCanvasTo(path, selectedScale);
+    
   } else {
     println("Export cancelled.");
   }
@@ -93,4 +100,32 @@ void exportSingleLayer(int layerIndex, String path) {
   PGraphics layer = layers.get(layerIndex);
   layer.save(path);
   println("Exported layer " + (layerIndex + 1) + " to: " + path);
+}
+
+void saveCanvasTo(String basePath, int scaleFactor) {
+  println("Saving PNG (x" + scaleFactor + ") to: " + basePath);
+
+  int scaledW = gridWidth * scaleFactor;
+  int scaledH = gridHeight * scaleFactor;
+
+  PGraphics pg = createGraphics(scaledW, scaledH);  // Create larger canvas
+  pg.beginDraw();
+
+  if (exportTransparent) {
+    pg.clear();
+  } else {
+    pg.background(255);
+  }
+
+  // Scale and draw each visible layer
+  pg.scale(scaleFactor);  // Scale BEFORE drawing
+  for (int i = 0; i < layers.size(); i++) {
+    if (layerVisibility.get(i)) {
+      pg.image(layers.get(i), 0, 0);
+    }
+  }
+
+  pg.endDraw();
+  pg.save(basePath);
+  println(" Exported at scale x" + scaleFactor);
 }
