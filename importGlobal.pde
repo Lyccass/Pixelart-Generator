@@ -62,3 +62,5 @@ ArrayList<Float> layerOpacities = new ArrayList<Float>();
 
 boolean buttonsAdded = false;
 boolean fillMode = false;
+
+int brushRadius = 1; // Default radius

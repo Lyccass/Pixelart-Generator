@@ -79,9 +79,17 @@ void mouseWheel(MouseEvent event) {
   float scroll = event.getCount();
   float zoomChange = 0.05;
 
+  // === Brush radius control with SHIFT ===
+  if (keyPressed && keyCode == SHIFT) {
+    brushRadius += scroll > 0 ? -1 : 1;
+    brushRadius = constrain(brushRadius, 1, 5);
+    println("Brush Radius: " + brushRadius);
+    return;
+  }
+
+  // === Default zoom ===
   float newZoom = constrain(zoom - scroll * zoomChange, minZoom, maxZoom);
 
-  // Zoom towards mouse position
   float mouseWorldX = (mouseX - panOffsetX) / zoom;
   float mouseWorldY = (mouseY - panOffsetY) / zoom;
 
@@ -107,54 +115,65 @@ void paintAt(int mx, int my) {
     hasSavedThisStroke = true;
   }
 
-  PGraphics layer = layers.get(activeLayer);
-  layer.beginDraw();
+PGraphics layer = layers.get(activeLayer);
+layer.beginDraw();
 
-  if (currentTool == ToolMode.ERASER) {
-    // Normal erase
-    layer.noStroke();
-    layer.fill(255, 255, 255, 0);
-    layer.blendMode(REPLACE);
-    layer.rect(x * tileSize, y * tileSize, tileSize, tileSize);
+float a = cp5.get(Slider.class, "Alpha").getValue();
+color c = color(
+  cp5.get(Slider.class, "Red").getValue(),
+  cp5.get(Slider.class, "Green").getValue(),
+  cp5.get(Slider.class, "Blue").getValue(),
+  a
+);
+
+for (int dx = -brushRadius + 1; dx < brushRadius; dx++) {
+  for (int dy = -brushRadius + 1; dy < brushRadius; dy++) {
+    int px = x + dx;
+    int py = y + dy;
+
+    if (px < 0 || px >= cols || py < 0 || py >= rows) continue;
+
+    if (currentTool == ToolMode.ERASER) {
+      layer.noStroke();
+      layer.fill(255, 255, 255, 0);
+      layer.blendMode(REPLACE);
+      layer.rect(px * tileSize, py * tileSize, tileSize, tileSize);
+      layer.blendMode(BLEND);
+    } else {
+      layer.noStroke();
+      layer.fill(c);
+      layer.rect(px * tileSize, py * tileSize, tileSize, tileSize);
+    }
 
     // Mirror
     if (mirrorMode) {
-      int mxMirror = cols - 1 - x;
-      if (mxMirror != x && mxMirror >= 0 && mxMirror < cols) {
-        layer.rect(mxMirror * tileSize, y * tileSize, tileSize, tileSize);
+      int mxMirror = cols - 1 - px;
+      if (mxMirror != px && mxMirror >= 0 && mxMirror < cols) {
+        if (currentTool == ToolMode.ERASER) {
+          layer.fill(255, 255, 255, 0);
+          layer.blendMode(REPLACE);
+          layer.rect(mxMirror * tileSize, py * tileSize, tileSize, tileSize);
+          layer.blendMode(BLEND);
+        } else {
+          layer.fill(c);
+          layer.rect(mxMirror * tileSize, py * tileSize, tileSize, tileSize);
+        }
       }
-    }
-
-    layer.blendMode(BLEND);
-  } else {
-    float a = cp5.get(Slider.class, "Alpha").getValue();
-    color c = color(
-      cp5.get(Slider.class, "Red").getValue(),
-      cp5.get(Slider.class, "Green").getValue(),
-      cp5.get(Slider.class, "Blue").getValue(),
-      a
-    );
-
-    layer.noStroke();
-    layer.fill(c);
-    layer.rect(x * tileSize, y * tileSize, tileSize, tileSize);
-
-    // Mirror
-    if (mirrorMode) {
-      int mxMirror = cols - 1 - x;
-      if (mxMirror != x && mxMirror >= 0 && mxMirror < cols) {
-        layer.rect(mxMirror * tileSize, y * tileSize, tileSize, tileSize);
-      }
-    }
-
-    currentColor = c;
-    if (!recentColors.contains(c)) {
-      recentColors.add(0, c);
-      if (recentColors.size() > 10) recentColors.remove(10);
     }
   }
+}
 
-  layer.endDraw();
+// Update current color & recent list
+if (currentTool != ToolMode.ERASER) {
+  currentColor = c;
+  if (!recentColors.contains(c)) {
+    recentColors.add(0, c);
+    if (recentColors.size() > 10) recentColors.remove(10);
+  }
+}
+
+layer.endDraw();
+
 }
 
 

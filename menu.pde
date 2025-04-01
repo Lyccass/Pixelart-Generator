@@ -158,6 +158,8 @@ void drawUIStatus() {
   text("[I] Import reference image", textX, y); y += lineHeight;
   text("[Y] lock reference image", textX, y); y += lineHeight;
 text("[↑↓] Change layer order", textX, y); y += lineHeight;
+text("Brush Radius: " + brushRadius + " (Shift + Scroll)", textX, y); y += lineHeight;
+
 
 }
 
