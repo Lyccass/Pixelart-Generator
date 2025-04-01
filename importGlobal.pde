@@ -7,8 +7,8 @@ import java.util.Collections;
 
 ControlP5 cp5;
 
-int cols = 32;
-int rows = 32;
+int cols = 64;
+int rows = 64;
 int tileSize = 10;
 
 int gridWidth, gridHeight;

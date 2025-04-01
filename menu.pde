@@ -221,17 +221,18 @@ void setupExportButtons() {
   RadioButton rb = cp5.addRadioButton("ExportScaleGroup")
     .setPosition(x, toggleY - 240)
     .setSize(20, 20)
-    .setItemsPerRow(4)
-    .setSpacingColumn(50)
-    .addItem("x1", 1)
-    .addItem("x2", 2)
-    .addItem("x3", 3)
-    .addItem("x4", 4)
+    .setItemsPerRow(5)
+    .setSpacingColumn(40)
+    .addItem("x1", 0.1)
+    .addItem("x5", 0.5)
+    .addItem("x10", 1)
+    .addItem("x20", 2)
+    .addItem("x40", 4)
     .setNoneSelectedAllowed(false)
     .activate(0);  // Default to x1
 
   // Optional: Label style
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 5; i++) {
     rb.getItem(i).getCaptionLabel().setColor(color(0));
   }
 }

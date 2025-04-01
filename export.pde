@@ -24,8 +24,9 @@ void onExportPathSelected(File selection) {
       base += ".png";
     }
 
-    // ✅ Get selected scale from the radio group
-    int selectedScale = int(cp5.get(RadioButton.class, "ExportScaleGroup").getValue());
+    // Get selected scale from the radio group
+    float selectedScale = cp5.get(RadioButton.class, "ExportScaleGroup").getValue();
+
 
     // ✅ Append scale suffix and export
     String path = base.replace(".png", "_x" + selectedScale + ".png");
@@ -36,32 +37,40 @@ void onExportPathSelected(File selection) {
   }
 }
 
-
 void saveCanvasTo(String path) {
-  println("Saving PNG to: " + path);
+  saveCanvasTo(path, 1.0);
+}
 
-  PGraphics pg = createGraphics(gridWidth, gridHeight);  // Use default renderer
+void saveCanvasTo(String path, float scale) {
+  int w = int(gridWidth * scale);
+  int h = int(gridHeight * scale);
 
+  if (w <= 0 || h <= 0) {
+    println("⚠️ Invalid export size: " + w + "x" + h);
+    return;
+  }
+
+  println("Saving PNG (x" + scale + ") to: " + path);
+  PGraphics pg = createGraphics(w, h);
   pg.beginDraw();
 
   if (exportTransparent) {
-    pg.clear();  // Transparent background
+    pg.clear();
   } else {
-    pg.background(255);  // Opaque white
+    pg.background(255);
   }
 
-  // ✅ Draw all visible layers onto export image
   for (int i = 0; i < layers.size(); i++) {
     if (layerVisibility.get(i)) {
-      pg.image(layers.get(i), 0, 0);
+      pg.image(layers.get(i), 0, 0, w, h);  // scaled draw
     }
   }
 
   pg.endDraw();
-
   pg.save(path);
-  println("Export complete!");
+  println("✅ Exported: " + path);
 }
+
 
 void exportAllLayersToFolder(String folderPath) {
   for (int i = 0; i < layers.size(); i++) {
