@@ -38,6 +38,25 @@ void mousePressed() {
     fillAt(mouseX, mouseY); // <-- calls your flood fill
     return;
   }
+  
+  if (currentTool == ToolMode.PICKER) {
+  color picked = getColorAt(mouseX, mouseY);
+  if (picked != -1) {
+    cp5.get(Slider.class, "Red").setValue(red(picked));
+    cp5.get(Slider.class, "Green").setValue(green(picked));
+    cp5.get(Slider.class, "Blue").setValue(blue(picked));
+    cp5.get(Slider.class, "Alpha").setValue(alpha(picked));
+    currentColor = picked;
+
+    println("Picked color:", hex(picked));
+  } else {
+    println("Could not pick color.");
+  }
+
+  currentTool = ToolMode.DRAW;  // Exit picker mode after one pick
+  return;
+}
+
 
   // Otherwise, regular painting
   mouseDown = true;
@@ -59,7 +78,7 @@ void mouseDragged() {
     return;
   }
 
-  // ⛔ Skip painting if we're interacting with the reference image
+  // Skip painting if we're interacting with the reference image
   if (isInteractingWithReference) return;
 
   if (mouseDown) {
@@ -148,7 +167,7 @@ for (int dx = -brushRadius + 1; dx < brushRadius; dx++) {
       layer.rect(px * tileSize, py * tileSize, tileSize, tileSize);
     }
 
-    // 🪞 Mirror
+    // Mirror
     if (mirrorMode) {
       int mxMirror = cols - 1 - px;
       if (mxMirror != px && mxMirror >= 0 && mxMirror < cols) {
@@ -180,8 +199,7 @@ layer.endDraw();
 
 }
 
-
-enum ToolMode { DRAW, FILL, ERASER }
+enum ToolMode { DRAW, FILL, ERASER, PICKER }  // add PICKER
 ToolMode currentTool = ToolMode.DRAW;
 
 
@@ -204,6 +222,11 @@ if (key == 'd' || key == 'D') {
 if (key == 'e' || key == 'E') {
   currentTool = ToolMode.ERASER;
   println("Tool: " + currentTool);
+}
+
+if (key == 'c' || key == 'C') {
+  currentTool = ToolMode.PICKER;
+  println("Tool: COLOR PICKER");
 }
 
 
@@ -261,4 +284,44 @@ if (key == 'e' || key == 'E') {
     layerVisibility.set(activeLayer, !vis);
     println("Layer " + (activeLayer + 1) + " visibility: " + !vis);
   }
+}
+
+color getColorAt(int mx, int my) {
+  float worldX = (mx - panOffsetX) / zoom;
+  float worldY = (my - panOffsetY) / zoom;
+
+  int px = int(worldX);
+  int py = int(worldY);
+
+  // Option A: Sample from reference image if visible
+  if (showReference && referenceImage != null) {
+    int refW = int(referenceImage.width * refScale);
+    int refH = int(referenceImage.height * refScale);
+    if (px >= refX && px < refX + refW && py >= refY && py < refY + refH) {
+      int rx = int((px - refX) / refScale);
+      int ry = int((py - refY) / refScale);
+      if (rx >= 0 && rx < referenceImage.width && ry >= 0 && ry < referenceImage.height) {
+        return referenceImage.get(rx, ry);
+      }
+    }
+  }
+
+  // Option B: Composite all visible layers into a temp surface
+  PGraphics composite = createGraphics(gridWidth, gridHeight);
+  composite.beginDraw();
+  composite.clear();
+  for (int i = 0; i < layers.size(); i++) {
+    if (layerVisibility.get(i)) {
+      composite.tint(255, layerOpacities.get(i) * 255);
+      composite.image(layers.get(i), 0, 0);
+    }
+  }
+  composite.endDraw();
+
+  // Sample from the composite image
+  if (px >= 0 && px < gridWidth && py >= 0 && py < gridHeight) {
+    return composite.get(px, py);
+  }
+
+  return -1;
 }

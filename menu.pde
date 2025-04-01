@@ -168,6 +168,7 @@ String getCurrentTool() {
     case DRAW: return "Draw (D)";
     case FILL: return "Fill (D)";
     case ERASER: return "Eraser (E)";
+    case PICKER: return "Colorpicker";
   }
   return "Unknown";
 }
