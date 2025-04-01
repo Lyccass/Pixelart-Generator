@@ -128,6 +128,9 @@ color c = color(
 
 for (int dx = -brushRadius + 1; dx < brushRadius; dx++) {
   for (int dy = -brushRadius + 1; dy < brushRadius; dy++) {
+    float dist = dist(0, 0, dx, dy);
+    if (dist >= brushRadius) continue; // ⛔ skip tiles outside radius
+
     int px = x + dx;
     int py = y + dy;
 
@@ -145,7 +148,7 @@ for (int dx = -brushRadius + 1; dx < brushRadius; dx++) {
       layer.rect(px * tileSize, py * tileSize, tileSize, tileSize);
     }
 
-    // Mirror
+    // 🪞 Mirror
     if (mirrorMode) {
       int mxMirror = cols - 1 - px;
       if (mxMirror != px && mxMirror >= 0 && mxMirror < cols) {
@@ -162,6 +165,7 @@ for (int dx = -brushRadius + 1; dx < brushRadius; dx++) {
     }
   }
 }
+
 
 // Update current color & recent list
 if (currentTool != ToolMode.ERASER) {
